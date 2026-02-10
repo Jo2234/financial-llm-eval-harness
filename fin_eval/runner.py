@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import platform
 import time
 from datetime import datetime, timezone
 from html import escape
@@ -13,8 +14,8 @@ import yaml
 
 from .adapters import CopilotApiAdapter, MockAdapter, load_fixture_responses
 from .models import EvalCase, TargetAdapter, TargetResponse
+from .schema import EvalSuite, RunArtifact
 from .scoring import aggregate, score_case
-
 
 DEFAULT_THRESHOLDS = {
     "overall_score": 0.80,
@@ -40,7 +41,9 @@ def load_cases(path: str | Path) -> list[EvalCase]:
     path = Path(path)
     raw = path.read_text()
     payload = json.loads(raw) if path.suffix.lower() == ".json" else yaml.safe_load(raw)
-    rows = payload["cases"] if isinstance(payload, dict) and "cases" in payload else payload
+    if isinstance(payload, dict) and "cases" in payload:
+        return EvalSuite(**payload).cases
+    rows = payload
     if not isinstance(rows, list):
         raise ValueError("Eval suite must be a list of cases or an object with a 'cases' list")
 
@@ -50,19 +53,29 @@ def load_cases(path: str | Path) -> list[EvalCase]:
 def validate_cases(cases: list[EvalCase]) -> dict[str, Any]:
     seen: set[str] = set()
     duplicates: list[str] = []
+    invalid_cases: list[str] = []
     for case in cases:
         if case.id in seen:
             duplicates.append(case.id)
         seen.add(case.id)
+        if not case.question.strip():
+            invalid_cases.append(f"{case.id}: question is required")
+        if not case.refusal_expected and not case.expected_answer_points:
+            invalid_cases.append(f"{case.id}: expected_answer_points are required unless refusal_expected=true")
+        if case.required_citation_rules and not isinstance(case.required_citation_rules, list):
+            invalid_cases.append(f"{case.id}: required_citation_rules must be a list")
 
     if duplicates:
         raise ValueError(f"Duplicate case IDs: {', '.join(sorted(set(duplicates)))}")
+    if invalid_cases:
+        raise ValueError("Invalid eval cases:\n" + "\n".join(invalid_cases))
 
     return {
         "case_count": len(cases),
         "categories": sorted({case.category for case in cases}),
         "difficulties": sorted({case.difficulty for case in cases}),
         "refusal_cases": sum(1 for case in cases if case.refusal_expected),
+        "schema": "financial-eval-suite/v1",
     }
 
 
@@ -229,6 +242,7 @@ def run_suite(
         "case_count": len(details),
         "started_at": datetime.now(timezone.utc).isoformat(),
         "duration_ms": int((time.perf_counter() - started) * 1000),
+        "python_version": platform.python_version(),
         **(metadata or {}),
     }
     payload = {
@@ -244,6 +258,8 @@ def run_suite(
     (out_path / "summary.md").write_text(markdown_report(payload))
     (out_path / "report.html").write_text(html_report(payload))
     (out_path / "failures.csv").write_text(failures_csv(details))
+    (out_path / "metrics.csv").write_text(metrics_csv(payload))
+    (out_path / "cases.jsonl").write_text(cases_jsonl(details))
     (out_path / "config.json").write_text(
         json.dumps(
             {
@@ -263,6 +279,8 @@ def run_suite(
             indent=2,
         )
     )
+    manifest = artifact_manifest(out_path)
+    (out_path / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     return payload
 
 
@@ -278,6 +296,32 @@ def failures_csv(results: list[dict[str, Any]]) -> str:
         if not result["passed"]:
             writer.writerow(result)
     return output.getvalue()
+
+
+def metrics_csv(payload: dict[str, Any]) -> str:
+    output = StringIO()
+    writer = csv.DictWriter(output, fieldnames=["scope", "name", "metric", "value"])
+    writer.writeheader()
+    for metric, value in sorted(payload.get("summary", {}).items()):
+        if isinstance(value, (int, float, bool)):
+            writer.writerow({"scope": "run", "name": "all", "metric": metric, "value": value})
+    for category, metrics in sorted(payload.get("category_breakdown", {}).items()):
+        for metric, value in sorted(metrics.items()):
+            if isinstance(value, (int, float, bool)):
+                writer.writerow({"scope": "category", "name": category, "metric": metric, "value": value})
+    return output.getvalue()
+
+
+def cases_jsonl(results: list[dict[str, Any]]) -> str:
+    return "".join(json.dumps(row, sort_keys=True) + "\n" for row in results)
+
+
+def artifact_manifest(out_path: Path) -> dict[str, Any]:
+    artifacts = []
+    for path in sorted(out_path.iterdir()):
+        if path.is_file() and path.name != "manifest.json":
+            artifacts.append({"name": path.name, "bytes": path.stat().st_size})
+    return {"schema": "financial-eval-run-manifest/v1", "artifacts": artifacts}
 
 
 def _recommendations(payload: dict[str, Any]) -> list[str]:
@@ -378,7 +422,38 @@ def html_report(payload: dict[str, Any]) -> str:
 
 
 def load_run(path: str | Path) -> dict[str, Any]:
-    return json.loads((Path(path) / "results.json").read_text())
+    payload = json.loads((Path(path) / "results.json").read_text())
+    RunArtifact(**payload)
+    return payload
+
+
+def compare_markdown(result: dict[str, Any]) -> str:
+    lines = [
+        "# Financial QA Eval Run Comparison",
+        "",
+        f"Regression pass: `{result['regression_pass']}`",
+        "",
+        "## Metric Deltas",
+        "| Metric | Baseline | Candidate | Delta |",
+        "|---|---:|---:|---:|",
+    ]
+    baseline_summary = result["baseline"]["summary"]
+    candidate_summary = result["candidate"]["summary"]
+    for metric in sorted(result["delta"]):
+        lines.append(
+            f"| {metric} | {baseline_summary.get(metric)} | {candidate_summary.get(metric)} | {result['delta'][metric]} |"
+        )
+    lines += ["", "## Case Changes"]
+    lines.append("- New failures: " + (", ".join(result["new_failures"]) if result["new_failures"] else "none"))
+    lines.append("- Fixed failures: " + (", ".join(result["fixed_failures"]) if result["fixed_failures"] else "none"))
+    lines += ["", "## Regression Violations"]
+    if result["violations"]:
+        lines += ["| Metric | Rule | Delta |", "|---|---|---:|"]
+        for violation in result["violations"]:
+            lines.append(f"| {violation['metric']} | {violation['rule']} | {violation['delta']} |")
+    else:
+        lines.append("None")
+    return "\n".join(lines) + "\n"
 
 
 def compare_runs(
