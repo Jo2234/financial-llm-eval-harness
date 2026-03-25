@@ -5,7 +5,8 @@ from pathlib import Path
 
 import typer
 
-from .runner import compare_runs, load_cases, run_suite, validate_cases
+from .runner import compare_markdown, compare_runs, load_cases, run_suite, validate_cases
+from .schema import schema_bundle, write_schema_bundle
 
 app = typer.Typer(help="Financial LLM evaluation harness")
 
@@ -74,6 +75,17 @@ def validate_suite(suite: str = typer.Option(..., "--suite", "-s", help="YAML or
     typer.echo(json.dumps({"valid": True, **stats}, indent=2))
 
 
+@app.command("schema")
+def emit_schema(out: str | None = typer.Option(None, "--out", "-o", help="Optional path to write the JSON schema bundle.")) -> None:
+    """Print or write JSON schemas for suites and run artifacts."""
+
+    if out:
+        write_schema_bundle(out)
+        typer.echo(json.dumps({"written": out}, indent=2))
+        return
+    typer.echo(json.dumps(schema_bundle(), indent=2))
+
+
 @app.command()
 def report(
     run: str = typer.Option(..., "--run", "-r", help="Run artifact directory."),
@@ -115,6 +127,8 @@ def compare(
     overall_drop: float = typer.Option(0.03, "--max-overall-drop", help="Allowed overall score drop."),
     citation_precision_drop: float = typer.Option(0.05, "--max-citation-precision-drop", help="Allowed citation precision drop."),
     cost_increase_pct: float = typer.Option(0.25, "--max-cost-increase-pct", help="Allowed cost per case increase."),
+    out: str | None = typer.Option(None, "--out", "-o", help="Optional directory for comparison.json and comparison.md."),
+    format: str = typer.Option("json", "--format", "-f", help="json or markdown."),
 ) -> None:
     result = compare_runs(
         baseline=baseline,
@@ -125,7 +139,17 @@ def compare(
             "cost_per_case_increase_pct": cost_increase_pct,
         },
     )
-    typer.echo(json.dumps(result, indent=2))
+    if out:
+        out_path = Path(out)
+        out_path.mkdir(parents=True, exist_ok=True)
+        (out_path / "comparison.json").write_text(json.dumps(result, indent=2) + "\n")
+        (out_path / "comparison.md").write_text(compare_markdown(result))
+    if format == "markdown":
+        typer.echo(compare_markdown(result))
+    elif format == "json":
+        typer.echo(json.dumps(result, indent=2))
+    else:
+        raise typer.BadParameter("format must be json or markdown")
     if gate and not result["regression_pass"]:
         raise typer.Exit(code=1)
 
