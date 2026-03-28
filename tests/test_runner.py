@@ -92,6 +92,11 @@ def test_run_suite_with_mock_adapter_writes_machine_and_human_reports(tmp_path):
     assert results_json["passed"] is True
     assert config_json["target"] == "mock"
     assert config_json["thresholds"] == runner.THRESHOLDS
+    assert (out_dir / "metrics.csv").read_text().startswith("scope,name,metric,value")
+    assert len((out_dir / "cases.jsonl").read_text().splitlines()) == 2
+    manifest = json.loads((out_dir / "manifest.json").read_text())
+    assert manifest["schema"] == "financial-eval-run-manifest/v1"
+    assert "results.json" in {artifact["name"] for artifact in manifest["artifacts"]}
     assert "# Financial QA Evaluation Report" in summary_md
     assert "- `target`: mock" in summary_md
     assert "- `pass`: True" in summary_md

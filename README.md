@@ -31,38 +31,53 @@ The core suite lives at `evals/core.yaml` and currently contains 50 cases:
 
 Each case includes an `id`, `category`, `difficulty`, `question`, `expected_answer_points`, `required_citation_rules`, `must_not_include`, `refusal_expected`, and tags. Multi-document cases list every source document in `documents`; the deterministic citation rule is kept to the primary document so the built-in mock adapter remains useful as a smoke test.
 
+`fin-eval validate-suite` loads the YAML/JSON suite through Pydantic models, rejects duplicate IDs, and catches missing questions or missing expected answer points for answerable cases. `fin-eval schema` emits JSON schemas for eval cases, top-level suites, and generated `results.json` artifacts.
+
+## Install
+
+Use an isolated environment, then install the package and CLI:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+```
+
+This exposes the `fin-eval` command. You can also run commands as `python -m fin_eval.cli` from a checkout.
+
 ## Commands
 
 Run commands from the project root:
 
 ```bash
-cd projects/financial-llm-eval-harness
+cd financial-llm-eval-harness
 ```
 
 Validate the suite:
 
 ```bash
-PYTHONPATH=. python -m fin_eval.cli validate-suite --suite evals/core.yaml
+fin-eval validate-suite --suite evals/core.yaml
+fin-eval schema --out schemas.json
 ```
 
 Run the suite with the built-in mock target:
 
 ```bash
-PYTHONPATH=. python -m fin_eval.cli run --suite evals/core.yaml --target mock --out runs/latest
+fin-eval run --suite evals/core.yaml --target mock --out runs/latest
 ```
 
 Run selected cases:
 
 ```bash
-PYTHONPATH=. python -m fin_eval.cli run --suite evals/core.yaml --target mock --category refusal,adversarial --out runs/traps
-PYTHONPATH=. python -m fin_eval.cli run --suite evals/core.yaml --target mock --tag nvda --limit 5 --out runs/nvda_sample
-PYTHONPATH=. python -m fin_eval.cli run --suite evals/core.yaml --target mock --case-id nvda_10k_datacenter_revenue_001 --out runs/single
+fin-eval run --suite evals/core.yaml --target mock --category refusal,adversarial --out runs/traps
+fin-eval run --suite evals/core.yaml --target mock --tag nvda --limit 5 --out runs/nvda_sample
+fin-eval run --suite evals/core.yaml --target mock --case-id nvda_10k_datacenter_revenue_001 --out runs/single
 ```
 
 Evaluate the copilot API:
 
 ```bash
-PYTHONPATH=. python -m fin_eval.cli run \
+fin-eval run \
   --suite evals/core.yaml \
   --target copilot-api \
   --base-url http://localhost:8001 \
@@ -74,7 +89,7 @@ PYTHONPATH=. python -m fin_eval.cli run \
 Override CI gate thresholds:
 
 ```bash
-PYTHONPATH=. python -m fin_eval.cli run \
+fin-eval run \
   --suite evals/core.yaml \
   --target mock \
   --threshold-overall 0.85 \
@@ -89,29 +104,30 @@ PYTHONPATH=. python -m fin_eval.cli run \
 Print generated reports:
 
 ```bash
-PYTHONPATH=. python -m fin_eval.cli report --run runs/latest --format markdown
-PYTHONPATH=. python -m fin_eval.cli report --run runs/latest --format html
-PYTHONPATH=. python -m fin_eval.cli report --run runs/latest --format json
+fin-eval report --run runs/latest --format markdown
+fin-eval report --run runs/latest --format html
+fin-eval report --run runs/latest --format json
 ```
 
 List failures:
 
 ```bash
-PYTHONPATH=. python -m fin_eval.cli list-failures --run runs/latest
-PYTHONPATH=. python -m fin_eval.cli list-failures --run runs/latest --json
+fin-eval list-failures --run runs/latest
+fin-eval list-failures --run runs/latest --json
 ```
 
 Compare two runs:
 
 ```bash
-PYTHONPATH=. python -m fin_eval.cli compare --baseline runs/baseline --candidate runs/latest
-PYTHONPATH=. python -m fin_eval.cli compare --baseline runs/baseline --candidate runs/latest --gate
+fin-eval compare --baseline runs/baseline --candidate runs/latest
+fin-eval compare --baseline runs/baseline --candidate runs/latest --format markdown --out runs/compare
+fin-eval compare --baseline runs/baseline --candidate runs/latest --gate
 ```
 
 Run tests:
 
 ```bash
-PYTHONPATH=. pytest
+pytest
 ```
 
 ## Run Outputs
@@ -124,7 +140,10 @@ PYTHONPATH=. pytest
 | `summary.md` | Markdown | Human-readable run report with aggregate metrics, gate violations, category metrics, failures, severe hallucination cases, slowest cases, costliest cases, and recommendations. |
 | `report.html` | HTML | Browser-friendly version of the run report. |
 | `failures.csv` | CSV | Failed case rows with case ID, category, difficulty, score, error, and answer. |
+| `metrics.csv` | CSV | Flat run/category metrics for dashboards and spreadsheet checks. |
+| `cases.jsonl` | JSONL | One scored case result per line for diffing or downstream ingestion. |
 | `config.json` | JSON | Suite path, target, endpoint, fixture, filters, and thresholds used for the run. |
+| `manifest.json` | JSON | Artifact inventory with file names and byte sizes. |
 
 The CLI prints a compact JSON summary to stdout and exits with code `0` when the aggregate gate passes. It exits with code `1` when the gate fails.
 
