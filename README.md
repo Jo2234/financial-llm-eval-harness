@@ -8,7 +8,7 @@ Financial QA systems fail in quiet ways: vague answers, stale knowledge, fake ci
 
 ## Quick Proof
 
-- 50-case suite across factual extraction, cited summary, multi-document synthesis, company comparison, refusal, and adversarial traps.
+- 50-case source-grounded quality suite across factual extraction, cited summary, multi-document synthesis, company comparison, refusal, and adversarial traps.
 - Built-in mock target for deterministic smoke tests plus a `copilot-api` adapter for evaluating a live research assistant endpoint.
 - Generated run artifacts include `results.json`, `summary.md`, `report.html`, `failures.csv`, and `config.json`.
 - Report template included for turning eval results into a readable engineering or product review.
@@ -29,7 +29,13 @@ The core suite lives at `evals/core.yaml` and currently contains 50 cases:
 | `refusal` | 5 | Check that the system refuses unsupported or non-public questions. |
 | `adversarial` | 5 | Catch investment advice, stale knowledge, fake citation, prompt injection, and unsupported precision traps. |
 
-Each case includes an `id`, `category`, `difficulty`, `question`, `expected_answer_points`, `required_citation_rules`, `must_not_include`, `refusal_expected`, and tags. Multi-document cases list every source document in `documents`; the deterministic citation rule is kept to the primary document so the built-in mock adapter remains useful as a smoke test.
+Quality cases separate factual `expected_answer_points` from behavioral `judge_rubric` instructions. Refusal cases have no factual answer points. Each answer source has a pinned excerpt and URL in `source_evidence`; cross-document cases require citations to every necessary source. See `evals/evidence/` for the provenance and curation notes. `evals/legacy_core_v1.yaml` preserves the original instruction-based suite for inspecting historical reports; it is not a quality benchmark.
+
+`evals/plumbing.yaml` is the small generated-mock smoke suite. Running the quality suite with `--target mock` requires an explicit, complete fixture: no expected-answer echo fallback is allowed. Fixture replay verifies scoring and artifact plumbing; it is not independent evidence of model quality. To measure a target, run `copilot-api` against a corpus containing the pinned source versions.
+
+Quality cases may add `required_answer_patterns` for explicit factual constraints (for example, accepting “rose” or “increased” while rejecting a contrary sales direction). Missing patterns zero answer-point credit and fail the case; the failed patterns are included in diagnostics. Invalid regexes are rejected during suite validation.
+
+The deterministic scorer checks lexical/numeric answer coverage and citation metadata; it is not a semantic entailment judge and does not independently authenticate the text a target claims to cite. Human review of retrieved evidence and answer meaning remains necessary when interpreting quality scores.
 
 `fin-eval validate-suite` loads the YAML/JSON suite through Pydantic models, rejects duplicate IDs, and catches missing questions or missing expected answer points for answerable cases. `fin-eval schema` emits JSON schemas for eval cases, top-level suites, and generated `results.json` artifacts.
 
@@ -60,18 +66,18 @@ fin-eval validate-suite --suite evals/core.yaml
 fin-eval schema --out schemas.json
 ```
 
-Run the suite with the built-in mock target:
+Run the plumbing suite with the built-in mock target:
 
 ```bash
-fin-eval run --suite evals/core.yaml --target mock --out runs/latest
+fin-eval run --suite evals/plumbing.yaml --target mock --out runs/latest
 ```
 
-Run selected cases:
+Replay selected curated quality fixtures (a scorer check, not a model evaluation):
 
 ```bash
-fin-eval run --suite evals/core.yaml --target mock --category refusal,adversarial --out runs/traps
-fin-eval run --suite evals/core.yaml --target mock --tag nvda --limit 5 --out runs/nvda_sample
-fin-eval run --suite evals/core.yaml --target mock --case-id nvda_10k_datacenter_revenue_001 --out runs/single
+fin-eval run --suite evals/core.yaml --target mock --fixture evals/fixtures/core_factual.json --category refusal,adversarial --out runs/traps
+fin-eval run --suite evals/core.yaml --target mock --fixture evals/fixtures/core_factual.json --tag nvda --limit 5 --out runs/nvda_sample
+fin-eval run --suite evals/core.yaml --target mock --fixture evals/fixtures/core_factual.json --case-id nvda_10k_datacenter_revenue_001 --out runs/single
 ```
 
 Evaluate the copilot API:
@@ -92,6 +98,7 @@ Override CI gate thresholds:
 fin-eval run \
   --suite evals/core.yaml \
   --target mock \
+  --fixture evals/fixtures/core_factual.json \
   --threshold-overall 0.85 \
   --threshold-citation-precision 0.90 \
   --threshold-citation-recall 0.80 \
@@ -158,3 +165,11 @@ Important top-level `results.json` fields:
 ## Report Template
 
 Use `report_templates/eval_report_template.md` when drafting a manual report or PR summary around generated run artifacts. The runtime reporter is currently implemented in `fin_eval/runner.py`; the template is documentation-only.
+
+## Scoring and regression provenance
+
+Scorer v2 separates execution status (`error`, `empty`, `answered`) from refusal behavior. Errors and empty answers fail the case and have `behavior_evaluated=false`, `refused=null`, and `refusal_correct=null`. They are not hallucinated claims. Refusal accuracy is correct behavior divided by **nonempty, error-free responses**; `behavior_evaluated_cases` and `behavior_unavailable_cases` expose that denominator. It is 0 when no response is evaluable, preventing an outage from passing the refusal gate. Error rate still uses all attempted cases. Other aggregate quality scores retain all attempted cases in their denominators.
+
+Runs record `scorer_version`, the complete case definition and its SHA-256 fingerprint. `compare --gate` requires identical case IDs, matching case fingerprints, and matching nonempty scorer versions. Added, removed, and changed cases are reported separately; omitted or changed failures are never called fixed. Incompatible or legacy unversioned runs return `comparable=false`, no aggregate deltas, and a failed regression gate. An empty selection is rejected before an adapter runs.
+
+Changing source targets, case wording, evidence, or scorer semantics requires a new baseline; retain the old artifacts. Replaying archived responses with a new scorer is a rescore, not a fresh model run, and should preserve execution timestamps alongside a separate rescoring timestamp.

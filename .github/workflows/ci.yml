@@ -37,7 +37,7 @@ jobs:
         run: fin-eval validate-suite --suite evals/core.yaml
 
       - name: Smoke run
-        run: fin-eval run --suite evals/core.yaml --target mock --limit 5 --out runs/ci-smoke
+        run: fin-eval run --suite evals/plumbing.yaml --target mock --limit 5 --out runs/ci-smoke
 
       - name: Compare smoke run to itself
         run: fin-eval compare --baseline runs/ci-smoke --candidate runs/ci-smoke --gate --out runs/ci-compare
