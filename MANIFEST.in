@@ -1,0 +1,5 @@
+include LICENSE README.md CHANGELOG.md
+recursive-include evals *.yaml *.json *.md
+recursive-include examples *.md
+recursive-include report_templates *.md
+recursive-include tests *.py
