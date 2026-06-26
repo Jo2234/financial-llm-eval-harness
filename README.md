@@ -14,6 +14,7 @@ Financial QA systems fail in quiet ways: vague answers, stale knowledge, fake ci
 - Report template included for turning eval results into a readable engineering or product review.
 
 See [examples/mock_run_summary.md](examples/mock_run_summary.md) for the shape of a mock-target report excerpt.
+See [examples/eval_run_card.md](examples/eval_run_card.md) for a full-suite proof card with aggregate metrics, category breakdown, and representative failures.
 
 ## Eval Suite
 
