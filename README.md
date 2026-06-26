@@ -2,6 +2,19 @@
 
 Library-first evaluation harness for financial QA systems. It validates curated financial QA cases, runs them against a target adapter, scores answer quality and citation behavior, and writes machine-readable plus human-readable reports.
 
+## Why This Matters
+
+Financial QA systems fail in quiet ways: vague answers, stale knowledge, fake citations, unsupported precision, and confident investment advice. This harness makes those failures inspectable by pairing curated cases with citation rules, refusal checks, latency/cost tracking, and CI-style gates.
+
+## Quick Proof
+
+- 50-case suite across factual extraction, cited summary, multi-document synthesis, company comparison, refusal, and adversarial traps.
+- Built-in mock target for deterministic smoke tests plus a `copilot-api` adapter for evaluating a live research assistant endpoint.
+- Generated run artifacts include `results.json`, `summary.md`, `report.html`, `failures.csv`, and `config.json`.
+- Report template included for turning eval results into a readable engineering or product review.
+
+See [examples/mock_run_summary.md](examples/mock_run_summary.md) for the shape of a mock-target report excerpt.
+
 ## Eval Suite
 
 The core suite lives at `evals/core.yaml` and currently contains 50 cases:
