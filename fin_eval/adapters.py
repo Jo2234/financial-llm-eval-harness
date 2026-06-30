@@ -75,7 +75,7 @@ def normalize_target_response(data: dict[str, Any], latency_ms: int) -> TargetRe
 
 
 def load_fixture_responses(path: str) -> dict[str, Any]:
-    with open(path, "r", encoding="utf-8") as handle:
+    with open(path, encoding="utf-8") as handle:
         if path.endswith(".json"):
             payload = json.load(handle)
         else:

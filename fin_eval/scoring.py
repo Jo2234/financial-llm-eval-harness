@@ -6,7 +6,6 @@ from typing import Any
 
 from .models import Citation, EvalCase, TargetResponse
 
-
 DEFAULT_MAX_LATENCY_MS = 8_000
 REFUSAL_PATTERNS = [
     r"\bnot enough\b",

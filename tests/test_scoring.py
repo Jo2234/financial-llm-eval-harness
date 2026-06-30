@@ -1,8 +1,8 @@
 import pytest
 
 from fin_eval.models import Citation, EvalCase, TargetResponse
-from fin_eval.scoring import aggregate, point_covered, score_case
 from fin_eval.runner import load_cases
+from fin_eval.scoring import aggregate, point_covered, score_case
 
 
 def test_score_case_with_citation_passes():
@@ -257,3 +257,25 @@ def test_aggregate_empty_results_returns_zeroed_summary():
 def test_core_suite_has_50_cases():
     cases = load_cases("evals/core.yaml")
     assert len(cases) >= 50
+
+
+def test_validate_cases_rejects_duplicate_ids_and_missing_expected_points():
+    cases = [
+        EvalCase(id="dup", category="factual", question="q", expected_answer_points=["point"]),
+        EvalCase(id="dup", category="factual", question="q", expected_answer_points=[]),
+    ]
+
+    with pytest.raises(ValueError, match="Duplicate case IDs"):
+        from fin_eval.runner import validate_cases
+
+        validate_cases(cases)
+
+
+def test_schema_bundle_contains_suite_and_run_artifact_schemas():
+    from fin_eval.schema import schema_bundle
+
+    bundle = schema_bundle()
+
+    assert bundle["schema_version"] == "financial-eval-suite/v1"
+    assert "eval_suite" in bundle
+    assert "run_artifact" in bundle
