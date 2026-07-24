@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from .models import EvalCase
 
-SCHEMA_VERSION = "financial-eval-suite/v1"
+SCHEMA_VERSION = "financial-eval-suite/v2"
 
 
 class EvalSuite(BaseModel):
@@ -19,6 +19,7 @@ class EvalSuite(BaseModel):
     schema_version: str | None = Field(default=None, description="Optional suite schema version marker.")
     name: str | None = Field(default=None, description="Human-readable suite name.")
     description: str | None = None
+    suite_kind: Literal["custom", "plumbing", "quality", "legacy"] = Field(default="custom", description="quality suites require source-grounded answer targets and explicit mock fixtures.")
     cases: list[EvalCase]
 
 

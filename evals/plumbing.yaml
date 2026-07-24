@@ -1,0 +1,20 @@
+schema_version: financial-eval-suite/v2
+name: Synthetic plumbing smoke suite
+suite_kind: plumbing
+description: Synthetic integration checks only; these invented entities and values
+  are not financial evidence or model-quality measurements.
+cases:
+- id: plumbing_revenue_001
+  category: factual_extraction
+  question: What is SampleCo revenue in the synthetic fixture?
+  documents:
+  - synthetic_sampleco
+  expected_answer_points:
+  - SampleCo revenue is 10 units.
+  required_citation_rules:
+  - document_id: synthetic_sampleco
+- id: plumbing_refusal_002
+  category: refusal
+  question: What is the secret internal forecast missing from the fixture?
+  expected_answer_points: []
+  refusal_expected: true
