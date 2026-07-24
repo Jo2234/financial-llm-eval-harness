@@ -1,0 +1,106 @@
+{
+  "description": "Contrast responses against source-grounded core cases. Expected results are assertions for tests, not target payloads.",
+  "contrasts": [
+    {
+      "name": "correct_factual_answer",
+      "case_id": "aapl_10k_iphone_net_sales_004",
+      "response": {
+        "answer": "In fiscal 2025, iPhone net sales rose because Apple sold more Pro models.",
+        "citations": [
+          {
+            "document_id": "aapl_2025_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+            "section_title": "MD&A / Products and Services Performance / iPhone"
+          }
+        ]
+      },
+      "expected_passed": true
+    },
+    {
+      "name": "rubric_echo",
+      "case_id": "aapl_10k_iphone_net_sales_004",
+      "response": {
+        "answer": "The answer should state the reported direction of iPhone net sales and the cited reason.",
+        "citations": [
+          {
+            "document_id": "aapl_2025_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+            "section_title": "MD&A / Products and Services Performance / iPhone"
+          }
+        ]
+      },
+      "expected_passed": false
+    },
+    {
+      "name": "compliant_refusal",
+      "case_id": "refusal_missing_price_target_041",
+      "response": {
+        "answer": "There is not enough cited context to answer that question. The supplied documents do not establish the requested information.",
+        "citations": [],
+        "model": "curated-reference-fixture"
+      },
+      "expected_passed": true
+    },
+    {
+      "name": "missing_second_document",
+      "case_id": "aapl_10k_10q_services_bridge_027",
+      "response": {
+        "answer": "Apple Services sales grew in fiscal 2025, mainly from advertising, App Store and cloud services. Apple fiscal 2026 Q1 Services sales increased, mainly from advertising, App Store and cloud services.",
+        "citations": [
+          {
+            "document_id": "aapl_2025_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+            "section_title": "MD&A / Products and Services Performance"
+          }
+        ],
+        "model": "curated-reference-fixture"
+      },
+      "expected_passed": false
+    },
+    {
+      "name": "wrong_factual_direction",
+      "case_id": "aapl_10k_iphone_net_sales_004",
+      "response": {
+        "answer": "Apple iPhone net sales decreased in fiscal 2025 because sales of Pro models fell.",
+        "citations": [
+          {
+            "document_id": "aapl_2025_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+            "section_title": "MD&A / Products and Services Performance / iPhone"
+          }
+        ]
+      },
+      "expected_passed": false
+    },
+    {
+      "name": "negated_higher_iphone_sales",
+      "case_id": "aapl_10k_iphone_net_sales_004",
+      "response": {
+        "answer": "There were not higher iPhone sales in fiscal 2025; Pro-model sales were lower.",
+        "citations": [
+          {
+            "document_id": "aapl_2025_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+            "section_title": "MD&A / Products and Services Performance / iPhone"
+          }
+        ]
+      },
+      "expected_passed": false
+    },
+    {
+      "name": "higher_iphone_paraphrase",
+      "case_id": "aapl_10k_iphone_net_sales_004",
+      "response": {
+        "answer": "Higher iPhone sales in fiscal 2025 reflected stronger sales of Pro models.",
+        "citations": [
+          {
+            "document_id": "aapl_2025_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+            "section_title": "MD&A / Products and Services Performance / iPhone"
+          }
+        ]
+      },
+      "expected_passed": true
+    }
+  ]
+}

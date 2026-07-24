@@ -1,0 +1,698 @@
+schema_version: financial-eval-evidence/v1
+retrieved_on: '2026-09-06'
+normalization: 'HTML: BeautifulSoup html.parser, remove script/style, get_text with spaces, collapse whitespace.
+  PDF: PyMuPDF page get_text, join and collapse whitespace. Character offsets are into that normalized text; context
+  hashes cover 1200 characters.'
+documents:
+- document_id: nvda_2025_10k
+  document_type: 10-K
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm
+  period_end: '2025-01-26'
+  sha256: dae19486be264fd26eb00a7f920dc641041a261c81bc8c03b678eea947de4856
+- document_id: nvda_2026_q1_10q
+  document_type: 10-Q
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581025000116/nvda-20250427.htm
+  period_end: '2025-04-27'
+  sha256: 9f71aa343f38059e3e99cc1c37d97efee9971f4e3fd33377e363064c3a0168f4
+- document_id: aapl_2025_10k
+  document_type: 10-K
+  url: https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+  period_end: '2025-09-27'
+  sha256: 548ae59778cf08ee0f2ee088e7ece20d947076c3c01f74d2d65db4c2777e436a
+- document_id: aapl_2026_q1_10q
+  document_type: 10-Q
+  url: https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm
+  period_end: '2025-12-27'
+  sha256: 3a3d9336a924488440e83b811ba354f654738cc822b6eb69ed6063e8cf348542
+- document_id: msft_2025_10k
+  document_type: 10-K
+  url: https://www.microsoft.com/investor/reports/ar25/
+  period_end: '2025-06-30'
+  sha256: 564154a15ac28c0f7f72f304ae26b74c29cfca9f3eafe8d59595776769d621ca
+- document_id: msft_2026_q1_10q
+  document_type: 10-Q
+  url: https://www.sec.gov/Archives/edgar/data/789019/000119312525256321/msft-20250930.htm
+  period_end: '2025-09-30'
+  sha256: c963d7503907384926e685a27064574fb9fbfa1adf9e2ececca4b2c3b7a35e12
+- document_id: jpm_2025_10k
+  document_type: 10-K
+  url: https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm
+  period_end: '2025-12-31'
+  sha256: 4d9febdbc2038dcdca8726053286df4cbbfd48885051cbd781efcc3becb66a23
+- document_id: jpm_2026_q1_10q
+  document_type: 10-Q
+  url: https://www.sec.gov/Archives/edgar/data/19617/000162828026029344/jpm-20260331.htm
+  period_end: '2026-03-31'
+  sha256: 08e5a5c3e5a3685b1a5c783eeb9f11808dea535f7a2fb1e139c6b9319d35afe9
+- document_id: xom_2025_10k
+  document_type: 10-K
+  url: https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm
+  period_end: '2025-12-31'
+  sha256: 3591db2246ab14c52465d32f69b459b000919c141a5656c81cf59acf0a805be8
+- document_id: xom_2026_q1_10q
+  document_type: 10-Q
+  url: https://www.sec.gov/Archives/edgar/data/34088/000003408826000067/xom-20260331.htm
+  period_end: '2026-03-31'
+  sha256: 09f0d43968999f2ca0f14224e5acf2cf1c477a97c5bedef03edc55f072d5dff9
+- document_id: tsla_2025_10k
+  document_type: 10-K
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm
+  period_end: '2025-12-31'
+  sha256: 90d5d2bc4057df41c645f85dcebe575af9b0953a6a1902d189297bec17fd440a
+- document_id: tsla_2026_q1_10q
+  document_type: 10-Q
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026026673/tsla-20260331.htm
+  period_end: '2026-03-31'
+  sha256: 0828884cae209013b718cc61762d476aa5fa121db235735cd56eb66f35b0c788
+- document_id: nvda_2026_q1_earnings_call
+  document_type: earnings_call
+  url: https://s201.q4cdn.com/141608511/files/doc_financials/2026/q1/NVDA-Q1-2026-Earnings-Call-28-May-2025-5_00-PM-ET.pdf
+  period_end: '2025-04-27'
+  sha256: 22cb530f2e7b3ee72c4fa6bd369ffc6dc687b263eef121b4305d5762a48c0c21
+- document_id: msft_2026_q1_earnings_call
+  document_type: earnings_call
+  url: https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q1
+  period_end: '2025-09-30'
+  sha256: 4f3d9cbc53e31388f2074c3e491eaf37b8012efa169213722622d3b35cf743c7
+- document_id: jpm_2026_q1_earnings_call
+  document_type: earnings_call
+  url: https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2026/1st-quarter/1q26-earnings-transcript.pdf
+  period_end: '2026-03-31'
+  sha256: 0b97af7b67e8c14fd812a7e6ece55ea74005d3968b942560db2e558ea96f63f9
+- document_id: aapl_2026_q1_earnings_release
+  document_type: earnings_release
+  url: https://www.sec.gov/Archives/edgar/data/320193/000032019326000005/a8-kex991q1202612272025.htm
+  period_end: '2025-12-27'
+  sha256: 28d8600ea68c13702a58336336c035843df7989d96b4edb90468fb56b1a1b6b0
+evidence:
+- evidence_id: nvda_annual_growth
+  document_id: nvda_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm
+  period_end: '2025-01-26'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Overview
+  excerpt: Hopper architecture
+  excerpt_kind: verbatim_locator
+  facts:
+  - NVIDIA fiscal 2025 Data Center sales rose 142%, reflecting demand for Hopper accelerated computing for large
+    language models, recommendation systems and generative AI.
+  - NVIDIA fiscal 2025 total revenue was $130.5 billion, 114% above the prior year.
+  source_sha256: dae19486be264fd26eb00a7f920dc641041a261c81bc8c03b678eea947de4856
+  normalized_text_sha256: 25d4d34160db6edbf018fd54d604fe6e871f246eb372e206dee37083c1749b53
+  context_start_character: 219311
+  context_sha256: f2d7c8102a7a227ec7994ffebb32ce8d90bab054879e019ebc08edcd93930b24
+- evidence_id: nvda_annual_margin
+  document_id: nvda_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm
+  period_end: '2025-01-26'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Overview; Risk Factors
+  excerpt: higher mix of Data Center revenue
+  excerpt_kind: verbatim_locator
+  facts:
+  - A larger Data Center share of revenue increased fiscal 2025 gross margin.
+  - Inventory provisions on low-yielding Blackwell material hurt gross margin during fiscal 2025 Q2.
+  source_sha256: dae19486be264fd26eb00a7f920dc641041a261c81bc8c03b678eea947de4856
+  normalized_text_sha256: 25d4d34160db6edbf018fd54d604fe6e871f246eb372e206dee37083c1749b53
+  context_start_character: 220270
+  context_sha256: 99823bd10f41e96065b75c8fae5cfc2239ebf25a4e065690b97de87f8dc54fc6
+- evidence_id: nvda_blackwell_cost
+  document_id: nvda_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm
+  period_end: '2025-01-26'
+  retrieved_on: '2026-09-06'
+  section_title: Risk Factors / Product transitions
+  excerpt: low-yielding Blackwell material
+  excerpt_kind: verbatim_locator
+  facts:
+  - Inventory provisions on low-yielding Blackwell material hurt gross margin during fiscal 2025 Q2.
+  source_sha256: dae19486be264fd26eb00a7f920dc641041a261c81bc8c03b678eea947de4856
+  normalized_text_sha256: 25d4d34160db6edbf018fd54d604fe6e871f246eb372e206dee37083c1749b53
+  context_start_character: 102600
+  context_sha256: 452ac455b54245f4286ef66bdd5c0b886b39f3b0e3212c93db7962562aa073fb
+- evidence_id: nvda_annual_supply
+  document_id: nvda_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm
+  period_end: '2025-01-26'
+  retrieved_on: '2026-09-06'
+  section_title: Risk Factors / Third-party manufacturing
+  excerpt: depend on foundries
+  excerpt_kind: verbatim_locator
+  facts:
+  - NVIDIA relies on external foundries and subcontractors for fabrication, assembly, testing and packaging.
+  - Capacity commitments and long lead times expose NVIDIA to shortages or excess inventory when demand estimates
+    are wrong.
+  source_sha256: dae19486be264fd26eb00a7f920dc641041a261c81bc8c03b678eea947de4856
+  normalized_text_sha256: 25d4d34160db6edbf018fd54d604fe6e871f246eb372e206dee37083c1749b53
+  context_start_character: 105717
+  context_sha256: 9b6cf5b9384604923ed7f58013c1af1f3ef59631ad86d4f33460a964d5671b78
+- evidence_id: apple_annual_services
+  document_id: aapl_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+  period_end: '2025-09-27'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Products and Services Performance
+  excerpt: advertising, the App Store and cloud services
+  excerpt_kind: verbatim_locator
+  facts:
+  - Apple Services sales grew in fiscal 2025, mainly from advertising, App Store and cloud services.
+  source_sha256: 548ae59778cf08ee0f2ee088e7ece20d947076c3c01f74d2d65db4c2777e436a
+  normalized_text_sha256: 09e1828b116b3a4af7d2d9781de3c5d775177fb7e68b2f25f7a9ee6ee106c48e
+  context_start_character: 124337
+  context_sha256: f2030e3cccaf46c768dc18936fa338adb49960224812967a5fb7285513c5adb3
+- evidence_id: apple_annual_iphone
+  document_id: aapl_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+  period_end: '2025-09-27'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Products and Services Performance / iPhone
+  excerpt: higher net sales of Pro models
+  excerpt_kind: verbatim_locator
+  facts:
+  - Apple iPhone sales increased in fiscal 2025 because Pro-model sales were higher.
+  source_sha256: 548ae59778cf08ee0f2ee088e7ece20d947076c3c01f74d2d65db4c2777e436a
+  normalized_text_sha256: 09e1828b116b3a4af7d2d9781de3c5d775177fb7e68b2f25f7a9ee6ee106c48e
+  context_start_character: 123732
+  context_sha256: fca1588be3ffec03aaffa5feefef095a6291162ae9d6f622dc03c0d04b1424a3
+- evidence_id: apple_annual_margin
+  document_id: aapl_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+  period_end: '2025-09-27'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Gross Margin
+  excerpt: tariff costs
+  excerpt_kind: verbatim_locator
+  facts:
+  - Apple product gross margin percentage fell in fiscal 2025 because of product mix and tariffs, partly offset
+    by other cost improvements.
+  source_sha256: 548ae59778cf08ee0f2ee088e7ece20d947076c3c01f74d2d65db4c2777e436a
+  normalized_text_sha256: 09e1828b116b3a4af7d2d9781de3c5d775177fb7e68b2f25f7a9ee6ee106c48e
+  context_start_character: 125022
+  context_sha256: 00d8e435c540568e87fdf7ddc8d4d8e265bc65c7083a8a14202e5ef0473d597e
+- evidence_id: msft_annual_cloud
+  document_id: msft_2025_10k
+  url: https://www.microsoft.com/investor/reports/ar25/
+  period_end: '2025-06-30'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Intelligent Cloud
+  excerpt: Azure and other cloud services revenue grew 34%
+  excerpt_kind: verbatim_locator
+  facts:
+  - Azure and other cloud services grew 34% in fiscal 2025 as demand increased across the portfolio.
+  source_sha256: 564154a15ac28c0f7f72f304ae26b74c29cfca9f3eafe8d59595776769d621ca
+  normalized_text_sha256: a9c0c5f31a0da6cff306d2358e759b364c5c144545236f7ad3489bfd7d80b815
+  context_start_character: 84052
+  context_sha256: a29f59880f0360bb8736d093795184f9fb39f45e06421c881bbf9acc0715070a
+- evidence_id: msft_annual_investment
+  document_id: msft_2025_10k
+  url: https://www.microsoft.com/investor/reports/ar25/
+  period_end: '2025-06-30'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Liquidity and Capital Resources
+  excerpt: AI infrastructure and training
+  excerpt_kind: verbatim_locator
+  facts:
+  - Microsoft planned continued capital investment in cloud growth, AI infrastructure and training, including datacenters
+    and computer systems.
+  source_sha256: 564154a15ac28c0f7f72f304ae26b74c29cfca9f3eafe8d59595776769d621ca
+  normalized_text_sha256: a9c0c5f31a0da6cff306d2358e759b364c5c144545236f7ad3489bfd7d80b815
+  context_start_character: 101948
+  context_sha256: 501a894fbe5ea62c2bd2219003df00660db55ab4dff77072be61ae5352c38471
+- evidence_id: jpm_annual_rates
+  document_id: jpm_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm
+  period_end: '2025-12-31'
+  retrieved_on: '2026-09-06'
+  section_title: Consolidated Results of Operations / Net interest income
+  excerpt: deposit margin compression
+  excerpt_kind: verbatim_locator
+  facts:
+  - JPMorgan net interest income grew in 2025 due to Markets income, larger revolving card balances, wholesale deposits
+    and securities activity.
+  - Lower interest rates and compressed deposit margins largely offset these positive drivers.
+  source_sha256: 4d9febdbc2038dcdca8726053286df4cbbfd48885051cbd781efcc3becb66a23
+  normalized_text_sha256: dc7a0dfc99bd1a5a9bfd5ce33e03bdb1a58a1ce0ef560d4d88288420192ca5e6
+  context_start_character: 457146
+  context_sha256: 6bb898ce0555c01daa0596e3551762fff0dfb6530d923a7da3e00c217c671257
+- evidence_id: jpm_annual_credit
+  document_id: jpm_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm
+  period_end: '2025-12-31'
+  retrieved_on: '2026-09-06'
+  section_title: Consolidated Results of Operations / Provision for credit losses
+  excerpt: Apple Card transaction
+  excerpt_kind: verbatim_locator
+  facts:
+  - 'JPMorgan 2025 credit-loss provision was $14.2 billion: $9.8 billion of net charge-offs and $4.4 billion of
+    reserve additions.'
+  - Consumer reserves included $2.2 billion for the Apple Card transaction; card loan growth and macroeconomic assumptions
+    also affected reserves.
+  - Wholesale provisions reflected portfolio growth and borrower credit-quality changes, including leveraged-loan
+    loss assumptions and estimated fraud losses.
+  source_sha256: 4d9febdbc2038dcdca8726053286df4cbbfd48885051cbd781efcc3becb66a23
+  normalized_text_sha256: dc7a0dfc99bd1a5a9bfd5ce33e03bdb1a58a1ce0ef560d4d88288420192ca5e6
+  context_start_character: 458469
+  context_sha256: fe96de0b72e77dc12c45b3f6a924d6a514aba36310bf3e381752ec934b9daade
+- evidence_id: jpm_annual_credit_quality
+  document_id: jpm_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm
+  period_end: '2025-12-31'
+  retrieved_on: '2026-09-06'
+  section_title: Consolidated Results of Operations / Provision for credit losses
+  excerpt: changes in credit quality
+  excerpt_kind: verbatim_locator
+  facts:
+  - Wholesale credit provisions reflected portfolio growth and borrower credit-quality changes.
+  source_sha256: 4d9febdbc2038dcdca8726053286df4cbbfd48885051cbd781efcc3becb66a23
+  normalized_text_sha256: dc7a0dfc99bd1a5a9bfd5ce33e03bdb1a58a1ce0ef560d4d88288420192ca5e6
+  context_start_character: 459228
+  context_sha256: 3c771651c5a29c73d4b7f31f9acd1ee45b7dab5ddfb1dc1106a9e3b29d584e6c
+- evidence_id: exxon_annual_upstream
+  document_id: xom_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm
+  period_end: '2025-12-31'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Upstream earnings driver analysis
+  excerpt: Lower realizations
+  excerpt_kind: verbatim_locator
+  facts:
+  - In 2025, lower realized crude prices reduced Exxon upstream earnings; Permian and Guyana production growth and
+    structural cost savings partly offset that pressure.
+  - Divestments reduced base volumes and Tengiz expansion depreciation increased expenses.
+  source_sha256: 3591db2246ab14c52465d32f69b459b000919c141a5656c81cf59acf0a805be8
+  normalized_text_sha256: d06477ea95da18fccd40aff4597f028df66fa708c814ea3589cc7ac33ec3e273
+  context_start_character: 223943
+  context_sha256: a5444aa29bb41a7844e138e24adfc1b8a7470515efdc5b1597392c4e27ed7a86
+- evidence_id: exxon_annual_low_carbon
+  document_id: xom_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm
+  period_end: '2025-12-31'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Forward-looking statements; Business environment
+  excerpt: public policy support
+  excerpt_kind: verbatim_locator
+  facts:
+  - Exxon identified CCS, hydrogen, ammonia and lower-emission fuels among its emissions-reduction investment opportunities.
+  - Actual lower-emission investment depends on available projects, supportive policy and returns.
+  source_sha256: 3591db2246ab14c52465d32f69b459b000919c141a5656c81cf59acf0a805be8
+  normalized_text_sha256: d06477ea95da18fccd40aff4597f028df66fa708c814ea3589cc7ac33ec3e273
+  context_start_character: 190416
+  context_sha256: 6730d29c2ace03f74c66a88b7fe136d47d49df7253c94fa6c76b9f88eb65ce4e
+- evidence_id: exxon_annual_liquidity
+  document_id: xom_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm
+  period_end: '2025-12-31'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Liquidity and Capital Resources
+  excerpt: Cash Flow from Operating Activities
+  excerpt_kind: verbatim_locator
+  facts:
+  - Exxon generated $52.0 billion of operating cash flow in 2025; spending on property, plant and equipment was
+    $28.4 billion.
+  - Exxon paid $17.2 billion in common dividends and repurchased $20 billion of shares in 2025, with internal cash
+    supplemented by debt access.
+  source_sha256: 3591db2246ab14c52465d32f69b459b000919c141a5656c81cf59acf0a805be8
+  normalized_text_sha256: d06477ea95da18fccd40aff4597f028df66fa708c814ea3589cc7ac33ec3e273
+  context_start_character: 258043
+  context_sha256: c3e40e06f2c8d21df87178fed2c802b0d861a76d5b7c091d1262382c08f4e71a
+- evidence_id: tesla_annual_revenue
+  document_id: tsla_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm
+  period_end: '2025-12-31'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Automotive revenue
+  excerpt: higher customer incentives
+  excerpt_kind: verbatim_locator
+  facts:
+  - Tesla automotive sales fell 9% in 2025 as cash deliveries declined about 8% and vehicle selling prices fell
+    with mix and incentives.
+  source_sha256: 90d5d2bc4057df41c645f85dcebe575af9b0953a6a1902d189297bec17fd440a
+  normalized_text_sha256: cd58b73a5db869e2bed06a27e329e50d1edab47c1ad20b1eeca9784514776073
+  context_start_character: 215951
+  context_sha256: 5711ab1545cbcead15908ed39d1cbd225782472f7b516b1b6247704c62e1f0b3
+- evidence_id: tesla_annual_margin
+  document_id: tsla_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm
+  period_end: '2025-12-31'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Cost of Revenues and Gross Margin
+  excerpt: decrease in regulatory credits revenue
+  excerpt_kind: verbatim_locator
+  facts:
+  - Tesla automotive gross margin fell from 18.4% to 17.8% in 2025, reflecting lower regulatory-credit revenue and
+    changes in vehicle sales and costs.
+  source_sha256: 90d5d2bc4057df41c645f85dcebe575af9b0953a6a1902d189297bec17fd440a
+  normalized_text_sha256: cd58b73a5db869e2bed06a27e329e50d1edab47c1ad20b1eeca9784514776073
+  context_start_character: 221015
+  context_sha256: 59d250f445f5e15052f634de3fbd8e6322b6fe2751739eb8fa2663cd4545314e
+- evidence_id: tesla_annual_cost
+  document_id: tsla_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm
+  period_end: '2025-12-31'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Cost of Revenues and Gross Margin
+  excerpt: lower fixed cost absorption
+  excerpt_kind: verbatim_locator
+  facts:
+  - Lower material costs helped Tesla vehicle unit costs in 2025, while weaker fixed-cost absorption and tariffs
+    offset part of that benefit.
+  source_sha256: 90d5d2bc4057df41c645f85dcebe575af9b0953a6a1902d189297bec17fd440a
+  normalized_text_sha256: cd58b73a5db869e2bed06a27e329e50d1edab47c1ad20b1eeca9784514776073
+  context_start_character: 220377
+  context_sha256: b72bbe9879b837bea910856dcb5e1f43fb4adaa03c522573cf83c278bb438dbb
+- evidence_id: tesla_annual_energy
+  document_id: tsla_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm
+  period_end: '2025-12-31'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Energy Generation and Storage
+  excerpt: Megapack and Powerwall deployments
+  excerpt_kind: verbatim_locator
+  facts:
+  - Tesla energy revenue rose 27% in 2025 as Megapack and Powerwall deployments increased; lower Megapack selling
+    prices partly offset the growth.
+  - Energy gross margin increased from 26.2% to 29.8%.
+  source_sha256: 90d5d2bc4057df41c645f85dcebe575af9b0953a6a1902d189297bec17fd440a
+  normalized_text_sha256: cd58b73a5db869e2bed06a27e329e50d1edab47c1ad20b1eeca9784514776073
+  context_start_character: 217311
+  context_sha256: 545d1c21909fd097e672958ea6f99550f56693a9a8fb3619b202d0bac1467f88
+- evidence_id: tesla_annual_supply
+  document_id: tsla_2025_10k
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm
+  period_end: '2025-12-31'
+  retrieved_on: '2026-09-06'
+  section_title: Notes / Supply Risk
+  excerpt: single source suppliers
+  excerpt_kind: verbatim_locator
+  facts:
+  - Tesla depends on suppliers, including sole-source suppliers, for timely deliveries at acceptable prices, quality
+    and volumes.
+  source_sha256: 90d5d2bc4057df41c645f85dcebe575af9b0953a6a1902d189297bec17fd440a
+  normalized_text_sha256: cd58b73a5db869e2bed06a27e329e50d1edab47c1ad20b1eeca9784514776073
+  context_start_character: 307873
+  context_sha256: 3dfc48042c65ebf0cf9659ec9f886eff5056a8db9a506f92f3912b45e6ba1ebd
+- evidence_id: nvda_quarter_h20
+  document_id: nvda_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581025000116/nvda-20250427.htm
+  period_end: '2025-04-27'
+  retrieved_on: '2026-09-06'
+  section_title: Notes 8 and 11; MD&A / Export controls
+  excerpt: H20 product excess inventory and purchase obligations
+  excerpt_kind: verbatim_locator
+  facts:
+  - NVIDIA recorded a $4.5 billion H20 inventory and purchase-obligation charge in fiscal 2026 Q1 following US export-license
+    requirements.
+  source_sha256: 9f71aa343f38059e3e99cc1c37d97efee9971f4e3fd33377e363064c3a0168f4
+  normalized_text_sha256: 30af60003df0fbe58ee58827947787fa060611baf49b7a3d9cc4d1d034e5dd67
+  context_start_character: 42306
+  context_sha256: 6b2978c7bbd203a8a80e6b59e55d1847f116bfa096cac0e8b2d76aaf7c95f66f
+- evidence_id: nvda_quarter_supply
+  document_id: nvda_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581025000116/nvda-20250427.htm
+  period_end: '2025-04-27'
+  retrieved_on: '2026-09-06'
+  section_title: Risk Factors / Supply and demand
+  excerpt: long-term supply agreements
+  excerpt_kind: verbatim_locator
+  facts:
+  - NVIDIA commits to capacity in advance; erroneous demand estimates can leave excess inventory or insufficient
+    supply.
+  source_sha256: 9f71aa343f38059e3e99cc1c37d97efee9971f4e3fd33377e363064c3a0168f4
+  normalized_text_sha256: 30af60003df0fbe58ee58827947787fa060611baf49b7a3d9cc4d1d034e5dd67
+  context_start_character: 104793
+  context_sha256: 899561cf8b40d6541f08644773e5a4e6165eb0a7c783a7f0adc9936e42d5d8bf
+- evidence_id: nvda_quarter_customers
+  document_id: nvda_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581025000116/nvda-20250427.htm
+  period_end: '2025-04-27'
+  retrieved_on: '2026-09-06'
+  section_title: Note 13 / Customer concentration
+  excerpt: Customer A
+  excerpt_kind: verbatim_locator
+  facts:
+  - Direct customers A and B represented 16% and 14% of NVIDIA fiscal 2026 Q1 revenue.
+  - Two indirect customers each represented at least 10% of revenue based on company estimates; the filing does
+    not identify their names.
+  source_sha256: 9f71aa343f38059e3e99cc1c37d97efee9971f4e3fd33377e363064c3a0168f4
+  normalized_text_sha256: 30af60003df0fbe58ee58827947787fa060611baf49b7a3d9cc4d1d034e5dd67
+  context_start_character: 66308
+  context_sha256: ebc0655cbb9cdfaab7c0fdf56bfe6c383035b7c598d59220d131ba06c4ef0769
+- evidence_id: nvda_quarter_growth
+  document_id: nvda_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581025000116/nvda-20250427.htm
+  period_end: '2025-04-27'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Overview
+  excerpt: generative and agentic AI applications
+  excerpt_kind: verbatim_locator
+  facts:
+  - NVIDIA fiscal 2026 Q1 Data Center revenue grew 73% year over year, driven by accelerated-computing demand for
+    AI applications as Blackwell expanded across customer categories.
+  source_sha256: 9f71aa343f38059e3e99cc1c37d97efee9971f4e3fd33377e363064c3a0168f4
+  normalized_text_sha256: 30af60003df0fbe58ee58827947787fa060611baf49b7a3d9cc4d1d034e5dd67
+  context_start_character: 80785
+  context_sha256: f6730b43d03e6689f37f90a7209531d8f9f33b535ec9d28ae42b6adc764393d5
+- evidence_id: apple_quarter_geography
+  document_id: aapl_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm
+  period_end: '2025-12-27'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Segment Operating Performance
+  excerpt: higher net sales of iPhone
+  excerpt_kind: verbatim_locator
+  facts:
+  - All five Apple geographic segments increased sales in fiscal 2026 Q1; Greater China grew 38%, Americas 11%,
+    Europe 13%, Japan 5% and Rest of Asia Pacific 18%.
+  - iPhone drove Greater China growth; iPhone and Services drove Americas, Europe and Rest of Asia Pacific growth.
+  source_sha256: 3a3d9336a924488440e83b811ba354f654738cc822b6eb69ed6063e8cf348542
+  normalized_text_sha256: 25840adb0ee5cce9e0a5a40da0a9cd4f3d1faade7b231a5b6d71bbfa157c6820
+  context_start_character: 42477
+  context_sha256: 83b42c110c025bc257954798aaf8c7fbe0048c52077608a3f01ecb1cfeffb8c8
+- evidence_id: apple_quarter_services
+  document_id: aapl_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm
+  period_end: '2025-12-27'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Products and Services Performance
+  excerpt: advertising, the App Store ® and cloud services
+  excerpt_kind: verbatim_locator
+  facts:
+  - Apple fiscal 2026 Q1 Services sales increased, mainly from advertising, App Store and cloud services.
+  source_sha256: 3a3d9336a924488440e83b811ba354f654738cc822b6eb69ed6063e8cf348542
+  normalized_text_sha256: 25840adb0ee5cce9e0a5a40da0a9cd4f3d1faade7b231a5b6d71bbfa157c6820
+  context_start_character: 45123
+  context_sha256: d2ecd39590f3e1246f5e43129b53dda4bd37b055717099b77d8602691e5b7e08
+- evidence_id: apple_quarter_liquidity
+  document_id: aapl_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm
+  period_end: '2025-12-27'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Liquidity and Capital Resources; Cash flow statement
+  excerpt: Liquidity and Capital Resources
+  excerpt_kind: verbatim_locator
+  facts:
+  - Apple generated $53.925 billion of operating cash in fiscal 2026 Q1, repurchased $25.0 billion of stock and
+    paid $3.9 billion in dividends and equivalents.
+  source_sha256: 3a3d9336a924488440e83b811ba354f654738cc822b6eb69ed6063e8cf348542
+  normalized_text_sha256: 25840adb0ee5cce9e0a5a40da0a9cd4f3d1faade7b231a5b6d71bbfa157c6820
+  context_start_character: 48726
+  context_sha256: 7406f8882859a08141eb01c61b974d802f1740b5c753b8d6e668c898b5280bf4
+- evidence_id: msft_quarter_rpo
+  document_id: msft_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/789019/000119312525256321/msft-20250930.htm
+  period_end: '2025-09-30'
+  retrieved_on: '2026-09-06'
+  section_title: Note 11 / Unearned Revenue
+  excerpt: remaining performance obligations
+  excerpt_kind: verbatim_locator
+  facts:
+  - Microsoft total remaining performance obligations were $398 billion at September 30, 2025, including $392 billion
+    commercial.
+  - Microsoft expected approximately 40% of total remaining obligations to become revenue within 12 months, with
+    the rest later.
+  source_sha256: c963d7503907384926e685a27064574fb9fbfa1adf9e2ececca4b2c3b7a35e12
+  normalized_text_sha256: b57ae9642795fc187373f0de61834d23a0f3abff2f4ea6a4c01370b21ce56556
+  context_start_character: 68356
+  context_sha256: 09c9a6d9928db96275a69bc75dce9f80e72e659f96778d8036510fb6be55674a
+- evidence_id: msft_quarter_cloud
+  document_id: msft_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/789019/000119312525256321/msft-20250930.htm
+  period_end: '2025-09-30'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Intelligent Cloud
+  excerpt: Azure and other cloud services
+  excerpt_kind: verbatim_locator
+  facts:
+  - Azure and other cloud services revenue grew 40% in fiscal 2026 Q1, with demand growth across workloads.
+  source_sha256: c963d7503907384926e685a27064574fb9fbfa1adf9e2ececca4b2c3b7a35e12
+  normalized_text_sha256: b57ae9642795fc187373f0de61834d23a0f3abff2f4ea6a4c01370b21ce56556
+  context_start_character: 106142
+  context_sha256: cceaddbde1b51d934815548b3c3a580fef9ae9135f2a15601a12f393c185a9f3
+- evidence_id: msft_quarter_segments
+  document_id: msft_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/789019/000119312525256321/msft-20250930.htm
+  period_end: '2025-09-30'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Segment Results
+  excerpt: Productivity and Business Processes
+  excerpt_kind: verbatim_locator
+  facts:
+  - Microsoft fiscal 2026 Q1 segment revenues were $33.020 billion for Productivity and Business Processes, $30.897
+    billion for Intelligent Cloud and $13.756 billion for More Personal Computing.
+  - Growth came from Microsoft 365 Commercial cloud, Azure, and Windows OEM plus search/news advertising, respectively.
+  source_sha256: c963d7503907384926e685a27064574fb9fbfa1adf9e2ececca4b2c3b7a35e12
+  normalized_text_sha256: b57ae9642795fc187373f0de61834d23a0f3abff2f4ea6a4c01370b21ce56556
+  context_start_character: 81526
+  context_sha256: f936b76eaac1eeaccabbea4ceafe15c4eb1c6f5bf68e21fe5b38164bd16cfdfc
+- evidence_id: msft_quarter_investment
+  document_id: msft_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/789019/000119312525256321/msft-20250930.htm
+  period_end: '2025-09-30'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Liquidity and Capital Resources
+  excerpt: capital expenditures
+  excerpt_kind: verbatim_locator
+  facts:
+  - Microsoft continued investment in cloud growth, AI infrastructure and training in fiscal 2026 Q1; cash additions
+    to property and equipment increased $4.5 billion year over year.
+  source_sha256: c963d7503907384926e685a27064574fb9fbfa1adf9e2ececca4b2c3b7a35e12
+  normalized_text_sha256: b57ae9642795fc187373f0de61834d23a0f3abff2f4ea6a4c01370b21ce56556
+  context_start_character: 120587
+  context_sha256: 32cc53cc17c08e8cff01faf1698752ba6fcf3f7b47aafe25acfac771d4568fe6
+- evidence_id: jpm_quarter_capital
+  document_id: jpm_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/19617/000162828026029344/jpm-20260331.htm
+  period_end: '2026-03-31'
+  retrieved_on: '2026-09-06'
+  section_title: Capital Risk Management
+  excerpt: CET1 capital ratio
+  excerpt_kind: verbatim_locator
+  facts:
+  - JPMorgan standardized CET1 was 14.3% at March 31, 2026, down from 14.6% at year-end; the requirement including
+    buffers was 11.5%.
+  source_sha256: 08e5a5c3e5a3685b1a5c783eeb9f11808dea535f7a2fb1e139c6b9319d35afe9
+  normalized_text_sha256: dcf8c4bff29a4e73510eec479e3bb5e877aa424cf3163afe04f02e94920bc8e9
+  context_start_character: 276188
+  context_sha256: 049deae9ec77820662954a715f832ef34bed0158fc40ca401dcdbd3acd8f2735
+- evidence_id: jpm_quarter_credit
+  document_id: jpm_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/19617/000162828026029344/jpm-20260331.htm
+  period_end: '2026-03-31'
+  retrieved_on: '2026-09-06'
+  section_title: Consolidated Results of Operations / Provision for credit losses
+  excerpt: net charge-offs
+  excerpt_kind: verbatim_locator
+  facts:
+  - JPMorgan fiscal 2026 Q1 credit-loss provision was $2.5 billion, with $2.3 billion of net charge-offs and $191
+    million of reserve additions.
+  source_sha256: 08e5a5c3e5a3685b1a5c783eeb9f11808dea535f7a2fb1e139c6b9319d35afe9
+  normalized_text_sha256: dcf8c4bff29a4e73510eec479e3bb5e877aa424cf3163afe04f02e94920bc8e9
+  context_start_character: 192614
+  context_sha256: 8274566b9f1dcf89145f3058f0ebd7826b7c0ebdf605840d586b42b966e3ec15
+- evidence_id: jpm_quarter_deposits
+  document_id: jpm_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/19617/000162828026029344/jpm-20260331.htm
+  period_end: '2026-03-31'
+  retrieved_on: '2026-09-06'
+  section_title: CCB results; Firmwide highlights
+  excerpt: Average deposits
+  excerpt_kind: verbatim_locator
+  facts:
+  - JPMorgan Consumer and Community Banking average deposits grew 2% both year over year and sequentially in Q1
+    2026; firmwide average deposits grew 7% year over year.
+  source_sha256: 08e5a5c3e5a3685b1a5c783eeb9f11808dea535f7a2fb1e139c6b9319d35afe9
+  normalized_text_sha256: dcf8c4bff29a4e73510eec479e3bb5e877aa424cf3163afe04f02e94920bc8e9
+  context_start_character: 195722
+  context_sha256: 4c427043be7cb2040a77f6ad0d8731a610c15b0a03c838b89790c92fbc39c624
+- evidence_id: exxon_quarter_cash
+  document_id: xom_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/34088/000003408826000067/xom-20260331.htm
+  period_end: '2026-03-31'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Liquidity and Capital Resources
+  excerpt: Cash provided by operating activities totaled $8.7 billion
+  excerpt_kind: verbatim_locator
+  facts:
+  - Exxon Q1 2026 operating cash flow was $8.7 billion, $4.2 billion below Q1 2025; property, plant and equipment
+    additions were $6.470 billion and shareholder dividends were $4.334 billion.
+  source_sha256: 09f0d43968999f2ca0f14224e5acf2cf1c477a97c5bedef03edc55f072d5dff9
+  normalized_text_sha256: a69e5c7c348a80bef661d5f0029cf8fc4beef2e32a5c60a286fd6c7592d0cca5
+  context_start_character: 80883
+  context_sha256: 2884ab75c1da46926c0ca6942c3a26647a440b9ad57e281b6d7f26a9ceb3a4e7
+- evidence_id: tesla_quarter_margin
+  document_id: tsla_2026_q1_10q
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026026673/tsla-20260331.htm
+  period_end: '2026-03-31'
+  retrieved_on: '2026-09-06'
+  section_title: MD&A / Automotive revenue and gross margin
+  excerpt: higher average selling price per unit
+  excerpt_kind: verbatim_locator
+  facts:
+  - Tesla automotive gross margin increased from 16.2% to 21.1% in Q1 2026 versus Q1 2025.
+  - Cash deliveries rose about 10%; mix and currency raised average selling prices, while one-time warranty and
+    tariff benefits supported costs.
+  source_sha256: 0828884cae209013b718cc61762d476aa5fa121db235735cd56eb66f35b0c788
+  normalized_text_sha256: a0a42946f522af489844f0b7045e0d084ea20a2452af19f74a13a86bdd984d96
+  context_start_character: 120181
+  context_sha256: 93336bc0f89829e02f31cc10fa23fc1444f19d0f4e0a7ad7be75c0a243bd50d6
+- evidence_id: nvda_call_supply
+  document_id: nvda_2026_q1_earnings_call
+  url: https://s201.q4cdn.com/141608511/files/doc_financials/2026/q1/NVDA-Q1-2026-Earnings-Call-28-May-2025-5_00-PM-ET.pdf
+  period_end: '2025-04-27'
+  retrieved_on: '2026-09-06'
+  section_title: May 28, 2025 call / CFO prepared remarks
+  excerpt: significant improvement in manufacturing yields
+  excerpt_kind: verbatim_locator
+  facts:
+  - NVIDIA management reported better Blackwell system manufacturing yields and rising rack shipments while also
+    discussing the $4.5 billion H20 inventory and purchase-obligation charge.
+  source_sha256: 22cb530f2e7b3ee72c4fa6bd369ffc6dc687b263eef121b4305d5762a48c0c21
+  normalized_text_sha256: ca157783c76bcf358704b6bf7d583bbee57a10f1a2a6a1ca09de04e9219c989e
+  context_start_character: 6338
+  context_sha256: 1c53a3ef7c5693a3a092a10739e06b0317ff4c983a2d94ef28b6ddd14626f6f1
+- evidence_id: apple_release_demand
+  document_id: aapl_2026_q1_earnings_release
+  url: https://www.sec.gov/Archives/edgar/data/320193/000032019326000005/a8-kex991q1202612272025.htm
+  period_end: '2025-12-27'
+  retrieved_on: '2026-09-06'
+  section_title: January 29, 2026 earnings release / Tim Cook statement
+  excerpt: all-time records across every geographic segment
+  excerpt_kind: verbatim_locator
+  facts:
+  - Tim Cook attributed the record iPhone quarter to unprecedented demand and said iPhone set records in every geographic
+    segment.
+  source_sha256: 28d8600ea68c13702a58336336c035843df7989d96b4edb90468fb56b1a1b6b0
+  normalized_text_sha256: 56d87507189b47d8c21efecfc83cf52a8aa68b81e8f21f1cf99cd07f5d03e764
+  context_start_character: 754
+  context_sha256: 985a3773583e7d8f523ed6a92086d83ddc40afff7f94758fb55d795499c2daaf
+- evidence_id: msft_call_capacity
+  document_id: msft_2026_q1_earnings_call
+  url: https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q1
+  period_end: '2025-09-30'
+  retrieved_on: '2026-09-06'
+  section_title: October 29, 2025 call / Amy Hood outlook
+  excerpt: capacity constrained through at least the end of our fiscal year
+  excerpt_kind: verbatim_locator
+  facts:
+  - Microsoft management expected capacity constraints through at least fiscal 2026 year-end; capital expenditures
+    of $34.9 billion in Q1 supported cloud and AI demand.
+  - The $34.9 billion capex measure includes finance leases; cash paid for property and equipment was $19.4 billion.
+  source_sha256: 4f3d9cbc53e31388f2074c3e491eaf37b8012efa169213722622d3b35cf743c7
+  normalized_text_sha256: 6994888b1454610d60b301f545d3284f5785b7dd67a24ea9d2a80a45270e5ff2
+  context_start_character: 28739
+  context_sha256: 11842cc329ade899d9362f61cf0300a6fa47af135418c8c0f80ccc56bf192ba4
+- evidence_id: jpm_call_deposits
+  document_id: jpm_2026_q1_earnings_call
+  url: https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2026/1st-quarter/1q26-earnings-transcript.pdf
+  period_end: '2026-03-31'
+  retrieved_on: '2026-09-06'
+  section_title: April 14, 2026 call / Jeremy Barnum CCB commentary
+  excerpt: account growth and moderating yield-seeking flows
+  excerpt_kind: verbatim_locator
+  facts:
+  - JPMorgan management attributed CCB average-deposit growth of 2% year over year and sequentially to new accounts
+    and less yield-seeking outflow.
+  source_sha256: 0b97af7b67e8c14fd812a7e6ece55ea74005d3968b942560db2e558ea96f63f9
+  normalized_text_sha256: b13153beb0a92f8015342a1aae198decac0e89f56025f04e23985ef86d445491
+  context_start_character: 6912
+  context_sha256: 0582089b86b00900a73728a66fba50fa10d0293a001d5ea8564782387fd6936c
