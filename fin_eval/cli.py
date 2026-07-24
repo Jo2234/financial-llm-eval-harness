@@ -5,7 +5,7 @@ from pathlib import Path
 
 import typer
 
-from .runner import compare_markdown, compare_runs, load_cases, run_suite, validate_cases
+from .runner import compare_markdown, compare_runs, load_suite, run_suite, validate_cases
 from .schema import schema_bundle, write_schema_bundle
 
 app = typer.Typer(help="Financial LLM evaluation harness")
@@ -70,8 +70,8 @@ def run(
 
 @app.command("validate-suite")
 def validate_suite(suite: str = typer.Option(..., "--suite", "-s", help="YAML or JSON eval suite path.")) -> None:
-    cases = load_cases(suite)
-    stats = validate_cases(cases)
+    document = load_suite(suite)
+    stats = validate_cases(document.cases, quality=document.suite_kind == "quality")
     typer.echo(json.dumps({"valid": True, **stats}, indent=2))
 
 
