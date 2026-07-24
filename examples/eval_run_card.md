@@ -1,5 +1,7 @@
 # Financial LLM Eval Run Card
 
+> Historical v1 artifact (June 2026). The original suite and scorer used rubric instructions as answer targets. These numbers are retained for provenance and are not comparable to the v2 factual suite. Use the current README for commands and scoring semantics.
+
 This is a compact proof artifact for AI eval, LLM observability, data operations, and application engineering roles. It was generated from the built-in mock target against the full finance QA suite.
 
 ## Run Command

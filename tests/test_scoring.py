@@ -220,8 +220,10 @@ def test_aggregate_summarizes_quality_latency_cost_and_errors():
     assert summary["passed_cases"] == 1
     assert summary["failed_cases"] == 1
     assert summary["overall_score"] == 0.75
-    assert summary["refusal_accuracy"] == 0.5
-    assert summary["severe_hallucination_count"] == 1
+    assert summary["refusal_accuracy"] == 1.0
+    assert summary["behavior_evaluated_cases"] == 1
+    assert summary["behavior_unavailable_cases"] == 1
+    assert summary["severe_hallucination_count"] == 0
     assert summary["median_latency_ms"] == 300
     assert summary["p95_latency_ms"] == 100
     assert summary["total_estimated_cost_usd"] == pytest.approx(0.30)
@@ -276,6 +278,6 @@ def test_schema_bundle_contains_suite_and_run_artifact_schemas():
 
     bundle = schema_bundle()
 
-    assert bundle["schema_version"] == "financial-eval-suite/v1"
+    assert bundle["schema_version"] == "financial-eval-suite/v2"
     assert "eval_suite" in bundle
     assert "run_artifact" in bundle

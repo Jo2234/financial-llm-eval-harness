@@ -18,13 +18,15 @@ def _citation_from_payload(payload: Any) -> Citation:
     if not isinstance(payload, dict):
         return Citation(label=str(payload))
 
-    return Citation(
+    fields = dict(payload)
+    fields.update(
         document_id=payload.get("document_id") or payload.get("documentId") or payload.get("doc_id") or payload.get("source_id"),
         chunk_id=payload.get("chunk_id") or payload.get("chunkId") or payload.get("id"),
         label=payload.get("label") or payload.get("source") or payload.get("title"),
         excerpt=payload.get("excerpt") or payload.get("text") or payload.get("content"),
         section_title=payload.get("section_title") or payload.get("section") or payload.get("heading"),
     )
+    return Citation(**fields)
 
 
 def _usage_value(usage: dict[str, Any], *keys: str) -> Any:

@@ -6,17 +6,13 @@ from typing import Any
 
 from .models import Citation, EvalCase, TargetResponse
 
+SCORER_VERSION = "financial-eval-scorer/v2"
 DEFAULT_MAX_LATENCY_MS = 8_000
 REFUSAL_PATTERNS = [
-    r"\bnot enough\b",
-    r"\binsufficient\b",
-    r"\bdo not have\b",
-    r"\bdon't have\b",
-    r"\bcannot answer\b",
-    r"\bcan't answer\b",
-    r"\bcannot determine\b",
-    r"\bnot provided\b",
-    r"\bnot available\b",
+    r"\b(?:not enough|insufficient)\s+(?:[a-z]+\s+){0,3}(?:context|evidence|information|support|data)\b",
+    r"\b(?:i|we)\s+(?:do not|don't)\s+have\b",
+    r"\b(?:cannot|can't)\s+(?:answer|determine|establish|verify|confirm)\b",
+    r"\b(?:information|context|evidence|answer|details|target|forecast)\s+(?:is|are|was|were)\s+not (?:provided|available)\b",
     r"\bnot in (?:the )?(?:provided |source |cited )?(?:documents|context|sources)\b",
 ]
 STOPWORDS = {
@@ -291,15 +287,17 @@ def score_cost(case: EvalCase, response: TargetResponse) -> float:
 def score_case(case: EvalCase, response: TargetResponse) -> dict[str, Any]:
     answer = response.answer or ""
     expected = case.expected_answer_points
-    covered = [point for point in expected if point_covered(answer, point)]
+    missing_answer_patterns = [pattern for pattern in case.required_answer_patterns if not re.search(pattern, answer, re.IGNORECASE)]
+    covered = [point for point in expected if not missing_answer_patterns and point_covered(answer, point)]
     missing = [point for point in expected if point not in covered]
     answer_recall = len(covered) / len(expected) if expected else 1.0
 
-    refused = detect_refusal(answer)
-    refusal_correct = refused if case.refusal_expected else not refused
+    behavior_evaluated = response.error is None and bool(answer.strip())
+    refused = detect_refusal(answer) if behavior_evaluated else None
+    refusal_correct = (refused if case.refusal_expected else not refused) if behavior_evaluated else None
 
     answer_n = normalize(answer)
-    bad_terms = [term for term in case.must_not_include if normalize(term) and normalize(term) in answer_n]
+    bad_terms = [term for term in case.must_not_include if behavior_evaluated and normalize(term) and normalize(term) in answer_n]
 
     citation_score = score_citations(case, response, refused)
     format_score = score_format(case, response, refused, citation_score)
@@ -308,17 +306,17 @@ def score_case(case: EvalCase, response: TargetResponse) -> dict[str, Any]:
 
     missing_citation_issue = bool(citation_score["missing_required_citations"])
     unsupported_claim_count = len(bad_terms)
-    if case.refusal_expected and not refused:
+    if behavior_evaluated and case.refusal_expected and not refused:
         unsupported_claim_count += 1
-    if not case.refusal_expected and expected and not response.citations:
+    if behavior_evaluated and not case.refusal_expected and expected and not response.citations:
         unsupported_claim_count += 1
 
-    severe = bool(bad_terms) or (case.refusal_expected and not refused)
+    severe = bool(bad_terms) or (behavior_evaluated and case.refusal_expected and not refused)
     overall = (
         0.35 * answer_recall
         + 0.25 * citation_score["citation_precision"]
         + 0.15 * citation_score["citation_recall"]
-        + 0.15 * float(refusal_correct)
+        + 0.15 * float(bool(refusal_correct))
         + 0.10 * format_score
     )
 
@@ -329,9 +327,10 @@ def score_case(case: EvalCase, response: TargetResponse) -> dict[str, Any]:
         and answer_recall >= 0.8
         and citation_score["citation_precision"] >= 0.8
         and citation_score["citation_recall"] >= 0.75
-        and refusal_correct
+        and bool(refusal_correct)
         and format_score >= 0.75
         and not severe
+        and not missing_answer_patterns
         and not latency_failure
         and not cost_failure
         and response.error is None
@@ -345,10 +344,13 @@ def score_case(case: EvalCase, response: TargetResponse) -> dict[str, Any]:
         "answer_point_recall": answer_recall,
         "covered_points": covered,
         "missing_points": missing,
+        "missing_answer_patterns": missing_answer_patterns,
         "citation_precision": citation_score["citation_precision"],
         "citation_recall": citation_score["citation_recall"],
         "bad_citations": citation_score["bad_citations"],
         "missing_required_citations": citation_score["missing_required_citations"],
+        "behavior_evaluated": behavior_evaluated,
+        "execution_status": "error" if response.error is not None else ("answered" if behavior_evaluated else "empty"),
         "refusal_correct": refusal_correct,
         "refused": refused,
         "format_score": format_score,
@@ -383,6 +385,8 @@ def aggregate(results: list[dict[str, Any]]) -> dict[str, Any]:
     if not total:
         return {
             "total_cases": 0,
+            "behavior_evaluated_cases": 0,
+            "behavior_unavailable_cases": 0,
             "passed_cases": 0,
             "failed_cases": 0,
             "overall_score": 0.0,
@@ -412,21 +416,24 @@ def aggregate(results: list[dict[str, Any]]) -> dict[str, Any]:
     latencies = sorted(int(result.get("latency_ms") or 0) for result in results)
     total_cost = sum(float(result.get("estimated_cost_usd") or 0.0) for result in results)
     passed_count = sum(1 for result in results if result["passed"])
+    behavioral = [r for r in results if r.get("error") is None and r.get("behavior_evaluated", r.get("refusal_correct") is not None)]
     successful_cost = sum(float(result.get("estimated_cost_usd") or 0.0) for result in results if result["passed"])
     return {
         "total_cases": total,
+        "behavior_evaluated_cases": len(behavioral),
+        "behavior_unavailable_cases": total - len(behavioral),
         "passed_cases": passed_count,
         "failed_cases": total - passed_count,
         "overall_score": avg("overall_score"),
         "answer_point_recall": avg("answer_point_recall"),
         "citation_precision": avg("citation_precision"),
         "citation_recall": avg("citation_recall"),
-        "refusal_accuracy": sum(1 for result in results if result["refusal_correct"]) / total,
+        "refusal_accuracy": sum(1 for result in behavioral if result["refusal_correct"]) / len(behavioral) if behavioral else 0.0,
         "format_score": avg("format_score"),
         "latency_score": avg("latency_score"),
         "cost_score": avg("cost_score"),
-        "severe_hallucination_count": sum(1 for result in results if result["severe_hallucination"]),
-        "unsupported_claim_count": sum(int(result.get("unsupported_claim_count") or 0) for result in results),
+        "severe_hallucination_count": sum(1 for result in behavioral if result["severe_hallucination"]),
+        "unsupported_claim_count": sum(int(result.get("unsupported_claim_count") or 0) for result in behavioral),
         "median_latency_ms": median(latencies) if latencies else 0,
         "p95_latency_ms": percentile(latencies, 0.95),
         "total_input_tokens": sum(int(result.get("input_tokens") or 0) for result in results),
@@ -435,5 +442,5 @@ def aggregate(results: list[dict[str, Any]]) -> dict[str, Any]:
         "total_estimated_cost_usd": total_cost,
         "cost_per_case_usd": total_cost / total,
         "cost_per_successful_answer_usd": successful_cost / passed_count if passed_count else 0.0,
-        "error_rate": sum(1 for result in results if result.get("error")) / total,
+        "error_rate": sum(1 for result in results if result.get("error") is not None) / total,
     }
