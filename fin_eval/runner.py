@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import platform
+import re
 import time
 from datetime import datetime, timezone
 from html import escape
@@ -14,8 +16,8 @@ import yaml
 
 from .adapters import CopilotApiAdapter, MockAdapter, load_fixture_responses
 from .models import EvalCase, TargetAdapter, TargetResponse
-from .schema import EvalSuite, RunArtifact
-from .scoring import aggregate, score_case
+from .schema import SCHEMA_VERSION, EvalSuite, RunArtifact
+from .scoring import SCORER_VERSION, aggregate, score_case
 
 DEFAULT_THRESHOLDS = {
     "overall_score": 0.80,
@@ -37,20 +39,24 @@ REGRESSION_THRESHOLDS = {
 }
 
 
-def load_cases(path: str | Path) -> list[EvalCase]:
+def load_suite(path: str | Path) -> EvalSuite:
     path = Path(path)
     raw = path.read_text()
     payload = json.loads(raw) if path.suffix.lower() == ".json" else yaml.safe_load(raw)
     if isinstance(payload, dict) and "cases" in payload:
-        return EvalSuite(**payload).cases
+        return EvalSuite(**payload)
     rows = payload
     if not isinstance(rows, list):
         raise ValueError("Eval suite must be a list of cases or an object with a 'cases' list")
 
-    return [EvalCase(**row) for row in rows]
+    return EvalSuite(cases=rows)
 
 
-def validate_cases(cases: list[EvalCase]) -> dict[str, Any]:
+def load_cases(path: str | Path) -> list[EvalCase]:
+    return load_suite(path).cases
+
+
+def validate_cases(cases: list[EvalCase], *, quality: bool = False) -> dict[str, Any]:
     seen: set[str] = set()
     duplicates: list[str] = []
     invalid_cases: list[str] = []
@@ -62,8 +68,26 @@ def validate_cases(cases: list[EvalCase]) -> dict[str, Any]:
             invalid_cases.append(f"{case.id}: question is required")
         if not case.refusal_expected and not case.expected_answer_points:
             invalid_cases.append(f"{case.id}: expected_answer_points are required unless refusal_expected=true")
-        if case.required_citation_rules and not isinstance(case.required_citation_rules, list):
-            invalid_cases.append(f"{case.id}: required_citation_rules must be a list")
+        for pattern in case.required_answer_patterns:
+            try:
+                if not pattern.strip():
+                    raise ValueError("empty pattern")
+                re.compile(pattern, re.IGNORECASE)
+            except (re.error, ValueError) as exc:
+                invalid_cases.append(f"{case.id}: invalid required answer pattern: {exc}")
+        if quality:
+            if case.refusal_expected and case.expected_answer_points:
+                invalid_cases.append(f"{case.id}: refusal cases must put behavioral requirements in judge_rubric, not answer points")
+            if any(point.lower().startswith(("the answer should", "the response should", "the summary should")) for point in case.expected_answer_points):
+                invalid_cases.append(f"{case.id}: expected answer points must be factual, not rubric instructions")
+            evidence = case.source_evidence
+            evidence_docs = {item.get("document_id") for item in evidence if isinstance(item, dict) and item.get("url") and item.get("excerpt")}
+            if not case.refusal_expected:
+                required_docs = {rule.get("document_id") for rule in case.required_citation_rules}
+                if not case.documents or not set(case.documents) <= evidence_docs:
+                    invalid_cases.append(f"{case.id}: every answer source needs an evidence excerpt and URL")
+                if not set(case.documents) <= required_docs:
+                    invalid_cases.append(f"{case.id}: citation rules must require every answer source")
 
     if duplicates:
         raise ValueError(f"Duplicate case IDs: {', '.join(sorted(set(duplicates)))}")
@@ -75,7 +99,7 @@ def validate_cases(cases: list[EvalCase]) -> dict[str, Any]:
         "categories": sorted({case.category for case in cases}),
         "difficulties": sorted({case.difficulty for case in cases}),
         "refusal_cases": sum(1 for case in cases if case.refusal_expected),
-        "schema": "financial-eval-suite/v1",
+        "schema": SCHEMA_VERSION,
     }
 
 
@@ -123,10 +147,17 @@ def _filter_cases(
     return selected
 
 
+def case_fingerprint(case: EvalCase) -> str:
+    encoded = json.dumps(_model_dump(case), sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def _case_result(case: EvalCase, response: TargetResponse) -> dict[str, Any]:
     result = score_case(case, response)
     result.update(
         {
+            "case_definition": _model_dump(case),
+            "case_fingerprint": case_fingerprint(case),
             "question": case.question,
             "difficulty": case.difficulty,
             "tags": case.tags,
@@ -216,16 +247,29 @@ def run_suite(
     metadata: dict[str, Any] | None = None,
     thresholds: dict[str, float | int] | None = None,
 ) -> dict[str, Any]:
-    cases = load_cases(suite)
-    validate_cases(cases)
+    suite_document = load_suite(suite)
+    cases = suite_document.cases
+    quality = suite_document.suite_kind == "quality"
+    validate_cases(cases, quality=quality)
     cases = _filter_cases(cases, case_ids=case_ids, categories=categories, tags=tags, limit=limit)
-    if endpoint == "/research/chat" and timeout_s == 20.0 and fixture is None:
+    if not cases:
+        raise ValueError("No cases selected; an empty run cannot establish evaluation quality")
+    if quality and target == "mock":
+        if fixture is None:
+            raise ValueError("Quality suites require an explicit --fixture for mock replay; use evals/plumbing.yaml for generated mock smoke tests")
+        fixture_rows = load_fixture_responses(fixture)
+        missing = sorted(case.id for case in cases if case.id not in fixture_rows)
+        if missing:
+            raise ValueError("Quality fixture is missing selected cases: " + ", ".join(missing))
+        adapter = MockAdapter(fixture_rows)
+    elif endpoint == "/research/chat" and timeout_s == 20.0 and fixture is None:
         adapter = adapter_for(target, base_url=base_url)
     else:
         adapter = adapter_for(target, base_url=base_url, endpoint=endpoint, timeout_s=timeout_s, fixture=fixture)
     out_path = Path(out)
     out_path.mkdir(parents=True, exist_ok=True)
     details: list[dict[str, Any]] = []
+    started_at = datetime.now(timezone.utc).isoformat()
     started = time.perf_counter()
 
     for case in cases:
@@ -240,11 +284,18 @@ def run_suite(
         "base_url": base_url,
         "endpoint": endpoint if target == "copilot-api" else None,
         "case_count": len(details),
-        "started_at": datetime.now(timezone.utc).isoformat(),
+        "suite_kind": suite_document.suite_kind,
+        "suite_version": suite_document.schema_version,
+        "evaluation_mode": "fixture-replay" if target == "mock" and fixture else target,
+        "rubric_evaluation": "not_performed",
+        "rubric_review_required_cases": sum(bool(case.judge_rubric) for case in cases),
+        "started_at": started_at,
+        "scorer_version": SCORER_VERSION,
         "duration_ms": int((time.perf_counter() - started) * 1000),
         "python_version": platform.python_version(),
         **(metadata or {}),
     }
+    run_metadata["scorer_version"] = SCORER_VERSION
     payload = {
         "metadata": run_metadata,
         "summary": summary,
@@ -303,11 +354,11 @@ def metrics_csv(payload: dict[str, Any]) -> str:
     writer = csv.DictWriter(output, fieldnames=["scope", "name", "metric", "value"])
     writer.writeheader()
     for metric, value in sorted(payload.get("summary", {}).items()):
-        if isinstance(value, (int, float, bool)):
+        if isinstance(value, int | float):
             writer.writerow({"scope": "run", "name": "all", "metric": metric, "value": value})
     for category, metrics in sorted(payload.get("category_breakdown", {}).items()):
         for metric, value in sorted(metrics.items()):
-            if isinstance(value, (int, float, bool)):
+            if isinstance(value, int | float):
                 writer.writerow({"scope": "category", "name": category, "metric": metric, "value": value})
     return output.getvalue()
 
@@ -328,7 +379,7 @@ def _recommendations(payload: dict[str, Any]) -> list[str]:
     summary = payload["summary"]
     recommendations = []
     if summary["severe_hallucination_count"]:
-        recommendations.append("Block release until severe hallucination cases are reviewed.")
+        recommendations.append("Review deterministic severe flags before release; prohibited-term or missing-refusal matches are not independent proof of hallucination.")
     if summary["citation_precision"] < DEFAULT_THRESHOLDS["citation_precision"]:
         recommendations.append("Inspect bad or missing citations before tuning answer prompts.")
     if summary["answer_point_recall"] < DEFAULT_THRESHOLDS["answer_point_recall"]:
@@ -354,9 +405,23 @@ def markdown_report(payload: dict[str, Any]) -> str:
         f"- `started_at`: {payload.get('metadata', {}).get('started_at')}",
         f"- `duration_ms`: {payload.get('metadata', {}).get('duration_ms')}",
         f"- `pass`: {payload['passed']}",
+        f"- `scorer_version`: {payload.get('metadata', {}).get('scorer_version', 'not recorded')}",
+        f"- `suite_version`: {payload.get('metadata', {}).get('suite_version', 'not recorded')}",
+        f"- `rubric_evaluation`: {payload.get('metadata', {}).get('rubric_evaluation', 'not performed')}",
+        "",
+        "The pass gate covers deterministic checks only; contextual judge rubrics are not automatically evaluated. Behavior metrics apply only to nonempty, error-free responses. Error and empty responses remain failed cases; refusal accuracy excludes them.",
         "",
         "## Aggregate Metrics",
     ]
+    metadata = payload.get("metadata", {})
+    if metadata.get("rescored_at"):
+        lines[2:2] = [
+            "Historical response rescore: saved answers were rescored offline; no new target requests were made.",
+            f"Captured: `{metadata.get('started_at', 'not recorded')}`; rescored: `{metadata['rescored_at']}`.",
+            f"Original artifact: `{metadata.get('original_artifact', 'not recorded')}`.",
+            "",
+        ]
+    lines.insert(lines.index("## Aggregate Metrics"), f"Evaluation mode: `{metadata.get('evaluation_mode', 'historical-capture-rescore' if metadata.get('rescored_at') else payload['target'])}`.")
     for key, value in s.items():
         lines.append(f"- `{key}`: {value}")
 
@@ -379,7 +444,7 @@ def markdown_report(payload: dict[str, Any]) -> str:
         lines.append(f"| {r['case_id']} | {r['category']} | {r['overall_score']:.3f} | {r.get('error') or ''} |")
 
     severe = [r for r in payload["results"] if r.get("severe_hallucination")]
-    lines += ["", "## Severe Hallucinations"]
+    lines += ["", "## Deterministic Severe Flags"]
     lines += [f"- `{r['case_id']}`: unsupported_claim_count={r['unsupported_claim_count']}" for r in severe[:25]] or ["None"]
 
     slowest = sorted(payload["results"], key=lambda row: row.get("latency_ms") or 0, reverse=True)[:10]
@@ -418,7 +483,14 @@ def html_report(payload: dict[str, Any]) -> str:
         for category, metrics in payload.get("category_breakdown", {}).items()
     )
     recommendations = "".join(f"<li>{escape(item)}</li>" for item in _recommendations(payload))
-    return f"""<!doctype html><html><head><meta charset='utf-8'><title>Financial QA Eval Report</title><style>body{{font-family:Arial;margin:32px;background:#f7f8fa;color:#1f2933}}table{{border-collapse:collapse;width:100%;background:white;margin:16px 0}}td,th{{border:1px solid #d8dee9;padding:8px;text-align:left}}.pass{{color:#087f5b;font-weight:700}}.fail{{color:#c92a2a;font-weight:700}}pre{{background:white;border:1px solid #d8dee9;padding:16px;overflow:auto}}</style></head><body><h1>Financial QA Eval Report</h1><p>Target: {escape(payload['target'])} | Pass: <strong>{payload['passed']}</strong></p><h2>Aggregate Metrics</h2><pre>{escape(json.dumps(payload['summary'], indent=2))}</pre><h2>Category Metrics</h2><table><thead><tr><th>Category</th><th>Cases</th><th>Overall</th><th>Passed</th></tr></thead><tbody>{category_rows}</tbody></table><h2>Case Results</h2><table><thead><tr><th>Case</th><th>Category</th><th>Score</th><th>Status</th><th>Error</th></tr></thead><tbody>{rows}</tbody></table><h2>Recommendations</h2><ul>{recommendations}</ul></body></html>"""
+    metadata = payload.get("metadata", {})
+    provenance = {
+        key: metadata[key]
+        for key in ("started_at", "rescored_at", "original_artifact", "scorer_version", "suite_version", "evaluation_mode", "rubric_evaluation")
+        if key in metadata
+    }
+    historical_note = "<p><strong>Historical response rescore:</strong> saved answers were rescored offline; no new target requests were made.</p>" if metadata.get("rescored_at") else ""
+    return f"""<!doctype html><html><head><meta charset='utf-8'><title>Financial QA Eval Report</title><style>body{{font-family:Arial;margin:32px;background:#f7f8fa;color:#1f2933}}table{{border-collapse:collapse;width:100%;background:white;margin:16px 0}}td,th{{border:1px solid #d8dee9;padding:8px;text-align:left}}.pass{{color:#087f5b;font-weight:700}}.fail{{color:#c92a2a;font-weight:700}}pre{{background:white;border:1px solid #d8dee9;padding:16px;overflow:auto}}</style></head><body><h1>Financial QA Eval Report</h1><p>Target: {escape(payload['target'])} | Pass: <strong>{payload['passed']}</strong></p><p>The pass gate covers deterministic checks only; contextual judge rubrics are not automatically evaluated. Refusal accuracy uses only nonempty, error-free responses. Unavailable responses remain failed cases.</p><h2>Run Provenance</h2>{historical_note}<pre>{escape(json.dumps(provenance, indent=2))}</pre><h2>Aggregate Metrics</h2><pre>{escape(json.dumps(payload['summary'], indent=2))}</pre><h2>Category Metrics</h2><table><thead><tr><th>Category</th><th>Cases</th><th>Overall</th><th>Passed</th></tr></thead><tbody>{category_rows}</tbody></table><h2>Case Results</h2><table><thead><tr><th>Case</th><th>Category</th><th>Score</th><th>Status</th><th>Error</th></tr></thead><tbody>{rows}</tbody></table><h2>Recommendations</h2><ul>{recommendations}</ul></body></html>"""
 
 
 def load_run(path: str | Path) -> dict[str, Any]:
@@ -444,6 +516,9 @@ def compare_markdown(result: dict[str, Any]) -> str:
             f"| {metric} | {baseline_summary.get(metric)} | {candidate_summary.get(metric)} | {result['delta'][metric]} |"
         )
     lines += ["", "## Case Changes"]
+    lines.append("- Comparable: " + str(result.get("comparable", False)))
+    for name in ("added_cases", "removed_cases", "changed_cases"):
+        lines.append("- " + name.replace("_", " ").capitalize() + ": " + (", ".join(result.get(name, [])) or "none"))
     lines.append("- New failures: " + (", ".join(result["new_failures"]) if result["new_failures"] else "none"))
     lines.append("- Fixed failures: " + (", ".join(result["fixed_failures"]) if result["fixed_failures"] else "none"))
     lines += ["", "## Regression Violations"]
@@ -466,18 +541,40 @@ def compare_runs(
     candidate_payload = load_run(candidate)
     baseline_summary = baseline_payload["summary"]
     candidate_summary = candidate_payload["summary"]
+    baseline_rows = {row["case_id"]: row for row in baseline_payload["results"]}
+    candidate_rows = {row["case_id"]: row for row in candidate_payload["results"]}
+    common = baseline_rows.keys() & candidate_rows.keys()
+    added = sorted(candidate_rows.keys() - baseline_rows.keys())
+    removed = sorted(baseline_rows.keys() - candidate_rows.keys())
+    incompatibilities = []
+    if not baseline_rows or not candidate_rows:
+        incompatibilities.append("empty case cohort")
+    if len(baseline_rows) != len(baseline_payload["results"]) or len(candidate_rows) != len(candidate_payload["results"]):
+        incompatibilities.append("duplicate case IDs")
+    if added or removed:
+        incompatibilities.append("case cohorts differ")
+    versions = [p.get("metadata", {}).get("scorer_version") for p in (baseline_payload, candidate_payload)]
+    compatible_versions = all(versions) and versions[0] == versions[1]
+    if not compatible_versions:
+        incompatibilities.append("missing or incompatible scorer versions")
+    changed = sorted(case_id for case_id in common if not baseline_rows[case_id].get("case_fingerprint")
+                     or baseline_rows[case_id].get("case_fingerprint") != candidate_rows[case_id].get("case_fingerprint"))
+    if changed:
+        incompatibilities.append("missing or incompatible case fingerprints")
+    comparable = not incompatibilities
+    comparable_cases = common - set(changed) if compatible_versions else set()
 
     metric_keys = sorted(set(baseline_summary) & set(candidate_summary))
     deltas = {
         key: candidate_summary[key] - baseline_summary[key]
         for key in metric_keys
-        if isinstance(candidate_summary[key], (int, float)) and isinstance(baseline_summary[key], (int, float))
+        if comparable and isinstance(candidate_summary[key], int | float) and isinstance(baseline_summary[key], int | float)
     }
 
     baseline_failed = {row["case_id"] for row in baseline_payload["results"] if not row["passed"]}
     candidate_failed = {row["case_id"] for row in candidate_payload["results"] if not row["passed"]}
 
-    violations = []
+    violations = [{"metric": "comparability", "rule": reason, "delta": None} for reason in incompatibilities]
     if deltas.get("overall_score", 0.0) < -thresholds["overall_score_drop"]:
         violations.append(
             {
@@ -505,7 +602,7 @@ def compare_runs(
 
     baseline_cost = baseline_summary.get("cost_per_case_usd") or 0.0
     candidate_cost = candidate_summary.get("cost_per_case_usd") or 0.0
-    if baseline_cost > 0 and candidate_cost > baseline_cost * (1 + thresholds["cost_per_case_increase_pct"]):
+    if comparable and baseline_cost > 0 and candidate_cost > baseline_cost * (1 + thresholds["cost_per_case_increase_pct"]):
         violations.append(
             {
                 "metric": "cost_per_case_usd",
@@ -518,8 +615,13 @@ def compare_runs(
         "baseline": {"path": str(baseline), "summary": baseline_summary},
         "candidate": {"path": str(candidate), "summary": candidate_summary},
         "delta": deltas,
-        "new_failures": sorted(candidate_failed - baseline_failed),
-        "fixed_failures": sorted(baseline_failed - candidate_failed),
+        "comparable": comparable,
+        "incompatibilities": incompatibilities,
+        "added_cases": added,
+        "removed_cases": removed,
+        "changed_cases": changed,
+        "new_failures": sorted((candidate_failed - baseline_failed) & comparable_cases),
+        "fixed_failures": sorted((baseline_failed - candidate_failed) & comparable_cases),
         "regression_pass": not violations,
         "violations": violations,
         "thresholds": thresholds,
