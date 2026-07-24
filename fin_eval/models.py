@@ -34,6 +34,8 @@ class EvalCase(BaseModel):
     answer_type: str | None = None
     notes: str | None = None
     judge_rubric: str | None = None
+    required_answer_patterns: list[str] = Field(default_factory=list)
+    source_evidence: list[dict[str, Any]] = Field(default_factory=list)
     max_latency_ms: int | None = None
     max_estimated_cost_usd: float | None = None
     tags: list[str] = Field(default_factory=list)

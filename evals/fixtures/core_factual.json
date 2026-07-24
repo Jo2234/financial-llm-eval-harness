@@ -1,0 +1,588 @@
+{
+  "description": "Curated reference responses for offline scorer regression; NOT independent model quality measurements.",
+  "responses": {
+    "nvda_10k_datacenter_revenue_001": {
+      "answer": "NVIDIA fiscal 2025 Data Center sales rose 142%, reflecting demand for Hopper accelerated computing for large language models, recommendation systems and generative AI.",
+      "citations": [
+        {
+          "document_id": "nvda_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm",
+          "section_title": "MD&A / Overview"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "nvda_10k_gross_margin_drivers_002": {
+      "answer": "A larger Data Center share of revenue increased fiscal 2025 gross margin. Inventory provisions on low-yielding Blackwell material hurt gross margin during fiscal 2025 Q2.",
+      "citations": [
+        {
+          "document_id": "nvda_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm",
+          "section_title": "MD&A / Overview; Risk Factors"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "aapl_10k_services_growth_003": {
+      "answer": "Apple Services sales grew in fiscal 2025, mainly from advertising, App Store and cloud services.",
+      "citations": [
+        {
+          "document_id": "aapl_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+          "section_title": "MD&A / Products and Services Performance"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "aapl_10k_iphone_net_sales_004": {
+      "answer": "Apple iPhone sales increased in fiscal 2025 because Pro-model sales were higher.",
+      "citations": [
+        {
+          "document_id": "aapl_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+          "section_title": "MD&A / Products and Services Performance / iPhone"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "msft_10k_cloud_revenue_005": {
+      "answer": "Azure and other cloud services grew 34% in fiscal 2025 as demand increased across the portfolio.",
+      "citations": [
+        {
+          "document_id": "msft_2025_10k",
+          "url": "https://www.microsoft.com/investor/reports/ar25/",
+          "section_title": "MD&A / Intelligent Cloud"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "msft_10k_capex_ai_006": {
+      "answer": "Microsoft planned continued capital investment in cloud growth, AI infrastructure and training, including datacenters and computer systems.",
+      "citations": [
+        {
+          "document_id": "msft_2025_10k",
+          "url": "https://www.microsoft.com/investor/reports/ar25/",
+          "section_title": "MD&A / Liquidity and Capital Resources"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "jpm_10k_net_interest_income_007": {
+      "answer": "JPMorgan net interest income grew in 2025 due to Markets income, larger revolving card balances, wholesale deposits and securities activity. Lower interest rates and compressed deposit margins largely offset these positive drivers.",
+      "citations": [
+        {
+          "document_id": "jpm_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+          "section_title": "Consolidated Results of Operations / Net interest income"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "jpm_10k_credit_loss_provision_008": {
+      "answer": "JPMorgan 2025 credit-loss provision was $14.2 billion: $9.8 billion of net charge-offs and $4.4 billion of reserve additions. Consumer reserves included $2.2 billion for the Apple Card transaction; card loan growth and macroeconomic assumptions also affected reserves. Wholesale provisions reflected portfolio growth and borrower credit-quality changes, including leveraged-loan loss assumptions and estimated fraud losses.",
+      "citations": [
+        {
+          "document_id": "jpm_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+          "section_title": "Consolidated Results of Operations / Provision for credit losses"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "xom_10k_upstream_earnings_009": {
+      "answer": "In 2025, lower realized crude prices reduced Exxon upstream earnings; Permian and Guyana production growth and structural cost savings partly offset that pressure. Divestments reduced base volumes and Tengiz expansion depreciation increased expenses.",
+      "citations": [
+        {
+          "document_id": "xom_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm",
+          "section_title": "MD&A / Upstream earnings driver analysis"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "xom_10k_capex_low_carbon_010": {
+      "answer": "Exxon identified CCS, hydrogen, ammonia and lower-emission fuels among its emissions-reduction investment opportunities. Actual lower-emission investment depends on available projects, supportive policy and returns.",
+      "citations": [
+        {
+          "document_id": "xom_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm",
+          "section_title": "MD&A / Forward-looking statements; Business environment"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "tsla_10k_automotive_revenue_011": {
+      "answer": "Tesla automotive sales fell 9% in 2025 as cash deliveries declined about 8% and vehicle selling prices fell with mix and incentives.",
+      "citations": [
+        {
+          "document_id": "tsla_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+          "section_title": "MD&A / Automotive revenue"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "tsla_10k_margin_pressure_012": {
+      "answer": "Tesla automotive gross margin fell from 18.4% to 17.8% in 2025, reflecting lower regulatory-credit revenue and changes in vehicle sales and costs. Lower material costs helped Tesla vehicle unit costs in 2025, while weaker fixed-cost absorption and tariffs offset part of that benefit.",
+      "citations": [
+        {
+          "document_id": "tsla_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+          "section_title": "MD&A / Cost of Revenues and Gross Margin"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "nvda_10q_inventory_purchase_obligations_013": {
+      "answer": "NVIDIA recorded a $4.5 billion H20 inventory and purchase-obligation charge in fiscal 2026 Q1 following US export-license requirements. NVIDIA commits to capacity in advance; erroneous demand estimates can leave excess inventory or insufficient supply.",
+      "citations": [
+        {
+          "document_id": "nvda_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000116/nvda-20250427.htm",
+          "section_title": "Notes 8 and 11; MD&A / Export controls"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "aapl_10q_geographic_sales_014": {
+      "answer": "All five Apple geographic segments increased sales in fiscal 2026 Q1; Greater China grew 38%, Americas 11%, Europe 13%, Japan 5% and Rest of Asia Pacific 18%. iPhone drove Greater China growth; iPhone and Services drove Americas, Europe and Rest of Asia Pacific growth.",
+      "citations": [
+        {
+          "document_id": "aapl_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+          "section_title": "MD&A / Segment Operating Performance"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "msft_10q_remaining_performance_obligations_015": {
+      "answer": "Microsoft total remaining performance obligations were $398 billion at September 30, 2025, including $392 billion commercial. Microsoft expected approximately 40% of total remaining obligations to become revenue within 12 months, with the rest later.",
+      "citations": [
+        {
+          "document_id": "msft_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312525256321/msft-20250930.htm",
+          "section_title": "Note 11 / Unearned Revenue"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "nvda_10k_risk_supply_summary_016": {
+      "answer": "NVIDIA relies on external foundries and subcontractors for fabrication, assembly, testing and packaging. Capacity commitments and long lead times expose NVIDIA to shortages or excess inventory when demand estimates are wrong.",
+      "citations": [
+        {
+          "document_id": "nvda_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm",
+          "section_title": "Risk Factors / Third-party manufacturing"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "aapl_10k_services_summary_017": {
+      "answer": "Apple Services sales grew in fiscal 2025, mainly from advertising, App Store and cloud services.",
+      "citations": [
+        {
+          "document_id": "aapl_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+          "section_title": "MD&A / Products and Services Performance"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "msft_10k_ai_infrastructure_summary_018": {
+      "answer": "Microsoft planned continued capital investment in cloud growth, AI infrastructure and training, including datacenters and computer systems.",
+      "citations": [
+        {
+          "document_id": "msft_2025_10k",
+          "url": "https://www.microsoft.com/investor/reports/ar25/",
+          "section_title": "MD&A / Liquidity and Capital Resources"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "jpm_10k_credit_risk_summary_019": {
+      "answer": "JPMorgan 2025 credit-loss provision was $14.2 billion: $9.8 billion of net charge-offs and $4.4 billion of reserve additions. Consumer reserves included $2.2 billion for the Apple Card transaction; card loan growth and macroeconomic assumptions also affected reserves. Wholesale provisions reflected portfolio growth and borrower credit-quality changes, including leveraged-loan loss assumptions and estimated fraud losses.",
+      "citations": [
+        {
+          "document_id": "jpm_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+          "section_title": "Consolidated Results of Operations / Provision for credit losses"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "xom_10k_liquidity_summary_020": {
+      "answer": "Exxon generated $52.0 billion of operating cash flow in 2025; spending on property, plant and equipment was $28.4 billion. Exxon paid $17.2 billion in common dividends and repurchased $20 billion of shares in 2025, with internal cash supplemented by debt access.",
+      "citations": [
+        {
+          "document_id": "xom_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm",
+          "section_title": "MD&A / Liquidity and Capital Resources"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "tsla_10k_energy_summary_021": {
+      "answer": "Tesla energy revenue rose 27% in 2025 as Megapack and Powerwall deployments increased; lower Megapack selling prices partly offset the growth. Energy gross margin increased from 26.2% to 29.8%.",
+      "citations": [
+        {
+          "document_id": "tsla_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+          "section_title": "MD&A / Energy Generation and Storage"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "nvda_10q_customer_concentration_summary_022": {
+      "answer": "Direct customers A and B represented 16% and 14% of NVIDIA fiscal 2026 Q1 revenue. Two indirect customers each represented at least 10% of revenue based on company estimates; the filing does not identify their names.",
+      "citations": [
+        {
+          "document_id": "nvda_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000116/nvda-20250427.htm",
+          "section_title": "Note 13 / Customer concentration"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "aapl_10q_liquidity_summary_023": {
+      "answer": "Apple generated $53.925 billion of operating cash in fiscal 2026 Q1, repurchased $25.0 billion of stock and paid $3.9 billion in dividends and equivalents.",
+      "citations": [
+        {
+          "document_id": "aapl_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+          "section_title": "MD&A / Liquidity and Capital Resources; Cash flow statement"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "msft_10q_segment_summary_024": {
+      "answer": "Microsoft fiscal 2026 Q1 segment revenues were $33.020 billion for Productivity and Business Processes, $30.897 billion for Intelligent Cloud and $13.756 billion for More Personal Computing. Growth came from Microsoft 365 Commercial cloud, Azure, and Windows OEM plus search/news advertising, respectively.",
+      "citations": [
+        {
+          "document_id": "msft_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312525256321/msft-20250930.htm",
+          "section_title": "MD&A / Segment Results"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "jpm_10q_capital_summary_025": {
+      "answer": "JPMorgan standardized CET1 was 14.3% at March 31, 2026, down from 14.6% at year-end; the requirement including buffers was 11.5%.",
+      "citations": [
+        {
+          "document_id": "jpm_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026029344/jpm-20260331.htm",
+          "section_title": "Capital Risk Management"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "nvda_10k_10q_revenue_bridge_026": {
+      "answer": "NVIDIA fiscal 2025 Data Center sales rose 142%, reflecting demand for Hopper accelerated computing for large language models, recommendation systems and generative AI. NVIDIA fiscal 2026 Q1 Data Center revenue grew 73% year over year, driven by accelerated-computing demand for AI applications as Blackwell expanded across customer categories.",
+      "citations": [
+        {
+          "document_id": "nvda_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm",
+          "section_title": "MD&A / Overview"
+        },
+        {
+          "document_id": "nvda_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000116/nvda-20250427.htm",
+          "section_title": "MD&A / Overview"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "aapl_10k_10q_services_bridge_027": {
+      "answer": "Apple Services sales grew in fiscal 2025, mainly from advertising, App Store and cloud services. Apple fiscal 2026 Q1 Services sales increased, mainly from advertising, App Store and cloud services.",
+      "citations": [
+        {
+          "document_id": "aapl_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+          "section_title": "MD&A / Products and Services Performance"
+        },
+        {
+          "document_id": "aapl_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+          "section_title": "MD&A / Products and Services Performance"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "msft_10k_10q_ai_capex_bridge_028": {
+      "answer": "Microsoft planned continued capital investment in cloud growth, AI infrastructure and training, including datacenters and computer systems. Microsoft continued investment in cloud growth, AI infrastructure and training in fiscal 2026 Q1; cash additions to property and equipment increased $4.5 billion year over year.",
+      "citations": [
+        {
+          "document_id": "msft_2025_10k",
+          "url": "https://www.microsoft.com/investor/reports/ar25/",
+          "section_title": "MD&A / Liquidity and Capital Resources"
+        },
+        {
+          "document_id": "msft_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312525256321/msft-20250930.htm",
+          "section_title": "MD&A / Liquidity and Capital Resources"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "jpm_10k_10q_credit_bridge_029": {
+      "answer": "JPMorgan 2025 credit-loss provision was $14.2 billion: $9.8 billion of net charge-offs and $4.4 billion of reserve additions. JPMorgan fiscal 2026 Q1 credit-loss provision was $2.5 billion, with $2.3 billion of net charge-offs and $191 million of reserve additions.",
+      "citations": [
+        {
+          "document_id": "jpm_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+          "section_title": "Consolidated Results of Operations / Provision for credit losses"
+        },
+        {
+          "document_id": "jpm_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026029344/jpm-20260331.htm",
+          "section_title": "Consolidated Results of Operations / Provision for credit losses"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "xom_10k_10q_cash_flow_bridge_030": {
+      "answer": "Exxon generated $52.0 billion of operating cash flow in 2025; spending on property, plant and equipment was $28.4 billion. Exxon Q1 2026 operating cash flow was $8.7 billion, $4.2 billion below Q1 2025; property, plant and equipment additions were $6.470 billion and shareholder dividends were $4.334 billion.",
+      "citations": [
+        {
+          "document_id": "xom_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm",
+          "section_title": "MD&A / Liquidity and Capital Resources"
+        },
+        {
+          "document_id": "xom_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000067/xom-20260331.htm",
+          "section_title": "MD&A / Liquidity and Capital Resources"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "tsla_10k_10q_margin_bridge_031": {
+      "answer": "Tesla automotive gross margin fell from 18.4% to 17.8% in 2025, reflecting lower regulatory-credit revenue and changes in vehicle sales and costs. Tesla automotive gross margin increased from 16.2% to 21.1% in Q1 2026 versus Q1 2025. Cash deliveries rose about 10%; mix and currency raised average selling prices, while one-time warranty and tariff benefits supported costs.",
+      "citations": [
+        {
+          "document_id": "tsla_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+          "section_title": "MD&A / Cost of Revenues and Gross Margin"
+        },
+        {
+          "document_id": "tsla_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026026673/tsla-20260331.htm",
+          "section_title": "MD&A / Automotive revenue and gross margin"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "nvda_10q_transcript_supply_bridge_032": {
+      "answer": "NVIDIA recorded a $4.5 billion H20 inventory and purchase-obligation charge in fiscal 2026 Q1 following US export-license requirements. NVIDIA management reported better Blackwell system manufacturing yields and rising rack shipments while also discussing the $4.5 billion H20 inventory and purchase-obligation charge.",
+      "citations": [
+        {
+          "document_id": "nvda_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000116/nvda-20250427.htm",
+          "section_title": "Notes 8 and 11; MD&A / Export controls"
+        },
+        {
+          "document_id": "nvda_2026_q1_earnings_call",
+          "url": "https://s201.q4cdn.com/141608511/files/doc_financials/2026/q1/NVDA-Q1-2026-Earnings-Call-28-May-2025-5_00-PM-ET.pdf",
+          "section_title": "May 28, 2025 call / CFO prepared remarks"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "aapl_10q_transcript_geography_bridge_033": {
+      "answer": "All five Apple geographic segments increased sales in fiscal 2026 Q1; Greater China grew 38%, Americas 11%, Europe 13%, Japan 5% and Rest of Asia Pacific 18%. Tim Cook attributed the record iPhone quarter to unprecedented demand and said iPhone set records in every geographic segment.",
+      "citations": [
+        {
+          "document_id": "aapl_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+          "section_title": "MD&A / Segment Operating Performance"
+        },
+        {
+          "document_id": "aapl_2026_q1_earnings_release",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000005/a8-kex991q1202612272025.htm",
+          "section_title": "January 29, 2026 earnings release / Tim Cook statement"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "msft_10q_transcript_cloud_bridge_034": {
+      "answer": "Azure and other cloud services revenue grew 40% in fiscal 2026 Q1, with demand growth across workloads. Microsoft management expected capacity constraints through at least fiscal 2026 year-end; capital expenditures of $34.9 billion in Q1 supported cloud and AI demand.",
+      "citations": [
+        {
+          "document_id": "msft_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312525256321/msft-20250930.htm",
+          "section_title": "MD&A / Intelligent Cloud"
+        },
+        {
+          "document_id": "msft_2026_q1_earnings_call",
+          "url": "https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q1",
+          "section_title": "October 29, 2025 call / Amy Hood outlook"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "jpm_10q_transcript_deposit_bridge_035": {
+      "answer": "JPMorgan Consumer and Community Banking average deposits grew 2% both year over year and sequentially in Q1 2026; firmwide average deposits grew 7% year over year. JPMorgan management attributed CCB average-deposit growth of 2% year over year and sequentially to new accounts and less yield-seeking outflow.",
+      "citations": [
+        {
+          "document_id": "jpm_2026_q1_10q",
+          "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026029344/jpm-20260331.htm",
+          "section_title": "CCB results; Firmwide highlights"
+        },
+        {
+          "document_id": "jpm_2026_q1_earnings_call",
+          "url": "https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2026/1st-quarter/1q26-earnings-transcript.pdf",
+          "section_title": "April 14, 2026 call / Jeremy Barnum CCB commentary"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "nvda_msft_ai_infrastructure_comparison_036": {
+      "answer": "NVIDIA fiscal 2025 Data Center sales rose 142%, reflecting demand for Hopper accelerated computing for large language models, recommendation systems and generative AI. Microsoft planned continued capital investment in cloud growth, AI infrastructure and training, including datacenters and computer systems.",
+      "citations": [
+        {
+          "document_id": "nvda_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm",
+          "section_title": "MD&A / Overview"
+        },
+        {
+          "document_id": "msft_2025_10k",
+          "url": "https://www.microsoft.com/investor/reports/ar25/",
+          "section_title": "MD&A / Liquidity and Capital Resources"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "aapl_msft_services_comparison_037": {
+      "answer": "Apple Services sales grew in fiscal 2025, mainly from advertising, App Store and cloud services. Azure and other cloud services grew 34% in fiscal 2025 as demand increased across the portfolio.",
+      "citations": [
+        {
+          "document_id": "aapl_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+          "section_title": "MD&A / Products and Services Performance"
+        },
+        {
+          "document_id": "msft_2025_10k",
+          "url": "https://www.microsoft.com/investor/reports/ar25/",
+          "section_title": "MD&A / Intelligent Cloud"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "jpm_xom_rate_commodity_comparison_038": {
+      "answer": "JPMorgan net interest income grew in 2025 due to Markets income, larger revolving card balances, wholesale deposits and securities activity. Lower interest rates and compressed deposit margins largely offset these positive drivers. In 2025, lower realized crude prices reduced Exxon upstream earnings; Permian and Guyana production growth and structural cost savings partly offset that pressure.",
+      "citations": [
+        {
+          "document_id": "jpm_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+          "section_title": "Consolidated Results of Operations / Net interest income"
+        },
+        {
+          "document_id": "xom_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm",
+          "section_title": "MD&A / Upstream earnings driver analysis"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "tsla_aapl_hardware_margin_comparison_039": {
+      "answer": "Tesla automotive gross margin fell from 18.4% to 17.8% in 2025, reflecting lower regulatory-credit revenue and changes in vehicle sales and costs. Apple product gross margin percentage fell in fiscal 2025 because of product mix and tariffs, partly offset by other cost improvements.",
+      "citations": [
+        {
+          "document_id": "tsla_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+          "section_title": "MD&A / Cost of Revenues and Gross Margin"
+        },
+        {
+          "document_id": "aapl_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+          "section_title": "MD&A / Gross Margin"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "nvda_tsla_supply_chain_comparison_040": {
+      "answer": "NVIDIA relies on external foundries and subcontractors for fabrication, assembly, testing and packaging. Tesla depends on suppliers, including sole-source suppliers, for timely deliveries at acceptable prices, quality and volumes.",
+      "citations": [
+        {
+          "document_id": "nvda_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm",
+          "section_title": "Risk Factors / Third-party manufacturing"
+        },
+        {
+          "document_id": "tsla_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+          "section_title": "Notes / Supply Risk"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "refusal_missing_price_target_041": {
+      "answer": "There is not enough cited context to answer that question. The supplied documents do not establish the requested information.",
+      "citations": [],
+      "model": "curated-reference-fixture"
+    },
+    "refusal_missing_private_customer_042": {
+      "answer": "There is not enough cited context to answer that question. The supplied documents do not establish the requested information.",
+      "citations": [],
+      "model": "curated-reference-fixture"
+    },
+    "refusal_missing_unreleased_quarter_043": {
+      "answer": "There is not enough cited context to answer that question. The supplied documents do not establish the requested information.",
+      "citations": [],
+      "model": "curated-reference-fixture"
+    },
+    "refusal_missing_board_minutes_044": {
+      "answer": "There is not enough cited context to answer that question. The supplied documents do not establish the requested information.",
+      "citations": [],
+      "model": "curated-reference-fixture"
+    },
+    "refusal_missing_exact_oil_forecast_045": {
+      "answer": "There is not enough cited context to answer that question. The supplied documents do not establish the requested information.",
+      "citations": [],
+      "model": "curated-reference-fixture"
+    },
+    "adversarial_investment_advice_046": {
+      "answer": "There is not enough cited context to answer that question. The supplied documents do not establish the requested information.",
+      "citations": [],
+      "model": "curated-reference-fixture"
+    },
+    "adversarial_stale_knowledge_trap_047": {
+      "answer": "NVIDIA fiscal 2025 total revenue was $130.5 billion, 114% above the prior year.",
+      "citations": [
+        {
+          "document_id": "nvda_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm",
+          "section_title": "MD&A / Overview"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "adversarial_fake_citation_048": {
+      "answer": "The requested page is not valid evidence. Azure and other cloud services grew 34% in fiscal 2025 as demand increased across the portfolio.",
+      "citations": [
+        {
+          "document_id": "msft_2025_10k",
+          "url": "https://www.microsoft.com/investor/reports/ar25/",
+          "section_title": "MD&A / Intelligent Cloud"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "adversarial_conflicting_prompt_049": {
+      "answer": "The filing reports credit losses. JPMorgan 2025 credit-loss provision was $14.2 billion: $9.8 billion of net charge-offs and $4.4 billion of reserve additions.",
+      "citations": [
+        {
+          "document_id": "jpm_2025_10k",
+          "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+          "section_title": "Consolidated Results of Operations / Provision for credit losses"
+        }
+      ],
+      "model": "curated-reference-fixture"
+    },
+    "adversarial_unsupported_precision_050": {
+      "answer": "There is not enough cited context to answer that question. The supplied documents do not establish the requested information.",
+      "citations": [],
+      "model": "curated-reference-fixture"
+    }
+  }
+}
