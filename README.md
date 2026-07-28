@@ -6,15 +6,14 @@ Library-first evaluation harness for financial QA systems. It validates curated 
 
 Financial QA systems fail in quiet ways: vague answers, stale knowledge, fake citations, unsupported precision, and confident investment advice. This harness makes those failures inspectable by pairing curated cases with citation rules, refusal checks, latency/cost tracking, and CI-style gates.
 
-## Quick Proof
+## Evaluation workflow
 
 - 50-case source-grounded quality suite across factual extraction, cited summary, multi-document synthesis, company comparison, refusal, and adversarial traps.
 - Built-in mock target for deterministic smoke tests plus a `copilot-api` adapter for evaluating a live research assistant endpoint.
 - Generated run artifacts include `results.json`, `summary.md`, `report.html`, `failures.csv`, and `config.json`.
 - Report template included for turning eval results into a readable engineering or product review.
 
-See [examples/mock_run_summary.md](examples/mock_run_summary.md) for the shape of a mock-target report excerpt.
-See [examples/eval_run_card.md](examples/eval_run_card.md) for a full-suite proof card with aggregate metrics, category breakdown, and representative failures.
+Start with the [current quality suite](evals/core.yaml) and its [source evidence](evals/evidence/README.md). The [plumbing suite](evals/plumbing.yaml) and explicit fixture replay check execution and scoring; their results do not establish model quality.
 
 ## Eval Suite
 
@@ -173,3 +172,9 @@ Scorer v2 separates execution status (`error`, `empty`, `answered`) from refusal
 Runs record `scorer_version`, the complete case definition and its SHA-256 fingerprint. `compare --gate` requires identical case IDs, matching case fingerprints, and matching nonempty scorer versions. Added, removed, and changed cases are reported separately; omitted or changed failures are never called fixed. Incompatible or legacy unversioned runs return `comparable=false`, no aggregate deltas, and a failed regression gate. An empty selection is rejected before an adapter runs.
 
 Changing source targets, case wording, evidence, or scorer semantics requires a new baseline; retain the old artifacts. Replaying archived responses with a new scorer is a rescore, not a fresh model run, and should preserve execution timestamps alongside a separate rescoring timestamp.
+
+## Examples and history
+
+The [historical mock report excerpt](examples/mock_run_summary.md) and [v1 mock run card](examples/eval_run_card.md) preserve June 2026 output from the original instruction-based suite and scorer. They illustrate the earlier report format; their metrics are not results for the current factual quality suite.
+
+The supporting [historical failure-analysis case study](https://github.com/Jo2234/eval-harness-report) rescores saved 13 July 2026 responses offline with scorer v2 and the unchanged legacy suite. It documents execution failures and scoring corrections, with the original captures and provenance retained. It is not a fresh target run or a benchmark of the current quality suite.
