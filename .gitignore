@@ -9,3 +9,5 @@ venv/
 runs/
 .DS_Store
 
+dist/
+build/
