@@ -40,6 +40,8 @@ The deterministic scorer checks lexical/numeric answer coverage and citation met
 
 ## Install
 
+See [v0.2.0 release notes](CHANGELOG.md) for wheel installation, source-release contents, and a clean-environment smoke test.
+
 Use an isolated environment, then install the package and CLI:
 
 ```bash
