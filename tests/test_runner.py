@@ -102,7 +102,7 @@ def test_run_suite_with_mock_adapter_writes_machine_and_human_reports(tmp_path):
     assert "- `pass`: True" in summary_md
     assert "## Category Metrics" in summary_md
     assert "<title>Financial QA Eval Report</title>" in report_html
-    assert "<td>factual_1</td>" in report_html
+    assert 'data-case-id="factual_1"' in report_html
     assert failures_csv.splitlines() == ["case_id,category,difficulty,overall_score,error,answer"]
 
 
@@ -246,5 +246,5 @@ def test_markdown_and_html_reports_include_failures_and_status():
     assert "## Gate Violations" in markdown
     assert "| bad_case | factual_extraction | 0.400 | timeout |" in markdown
     assert "- `bad_case`: unsupported_claim_count=2" in markdown
-    assert "<td>bad_case</td>" in html
-    assert '<td class="fail">fail</td>' in html
+    assert 'data-case-id="bad_case"' in html
+    assert '<span class="status fail">Failed</span>' in html
