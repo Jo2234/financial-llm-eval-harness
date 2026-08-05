@@ -43,6 +43,9 @@ Repository = "https://github.com/Jo2234/financial-llm-eval-harness"
 [tool.setuptools.packages.find]
 include = ["fin_eval*"]
 
+[tool.setuptools.package-data]
+fin_eval = ["report.css"]
+
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
