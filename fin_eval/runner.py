@@ -7,7 +7,6 @@ import platform
 import re
 import time
 from datetime import datetime, timezone
-from html import escape
 from io import StringIO
 from pathlib import Path
 from typing import Any
@@ -16,6 +15,7 @@ import yaml
 
 from .adapters import CopilotApiAdapter, MockAdapter, load_fixture_responses
 from .models import EvalCase, TargetAdapter, TargetResponse
+from .reporting import render_report
 from .schema import SCHEMA_VERSION, EvalSuite, RunArtifact
 from .scoring import SCORER_VERSION, aggregate, score_case
 
@@ -463,34 +463,7 @@ def markdown_report(payload: dict[str, Any]) -> str:
 
 
 def html_report(payload: dict[str, Any]) -> str:
-    rows = "".join(
-        "<tr>"
-        f"<td>{escape(r['case_id'])}</td>"
-        f"<td>{escape(r['category'])}</td>"
-        f"<td>{r['overall_score']:.3f}</td>"
-        f"<td class=\"{'pass' if r['passed'] else 'fail'}\">{'pass' if r['passed'] else 'fail'}</td>"
-        f"<td>{escape(r.get('error') or '')}</td>"
-        "</tr>"
-        for r in payload["results"]
-    )
-    category_rows = "".join(
-        "<tr>"
-        f"<td>{escape(category)}</td>"
-        f"<td>{metrics['total_cases']}</td>"
-        f"<td>{metrics['overall_score']:.3f}</td>"
-        f"<td>{metrics['passed_cases']}</td>"
-        "</tr>"
-        for category, metrics in payload.get("category_breakdown", {}).items()
-    )
-    recommendations = "".join(f"<li>{escape(item)}</li>" for item in _recommendations(payload))
-    metadata = payload.get("metadata", {})
-    provenance = {
-        key: metadata[key]
-        for key in ("started_at", "rescored_at", "original_artifact", "scorer_version", "suite_version", "evaluation_mode", "rubric_evaluation")
-        if key in metadata
-    }
-    historical_note = "<p><strong>Historical response rescore:</strong> saved answers were rescored offline; no new target requests were made.</p>" if metadata.get("rescored_at") else ""
-    return f"""<!doctype html><html><head><meta charset='utf-8'><title>Financial QA Eval Report</title><style>body{{font-family:Arial;margin:32px;background:#f7f8fa;color:#1f2933}}table{{border-collapse:collapse;width:100%;background:white;margin:16px 0}}td,th{{border:1px solid #d8dee9;padding:8px;text-align:left}}.pass{{color:#087f5b;font-weight:700}}.fail{{color:#c92a2a;font-weight:700}}pre{{background:white;border:1px solid #d8dee9;padding:16px;overflow:auto}}</style></head><body><h1>Financial QA Eval Report</h1><p>Target: {escape(payload['target'])} | Pass: <strong>{payload['passed']}</strong></p><p>The pass gate covers deterministic checks only; contextual judge rubrics are not automatically evaluated. Refusal accuracy uses only nonempty, error-free responses. Unavailable responses remain failed cases.</p><h2>Run Provenance</h2>{historical_note}<pre>{escape(json.dumps(provenance, indent=2))}</pre><h2>Aggregate Metrics</h2><pre>{escape(json.dumps(payload['summary'], indent=2))}</pre><h2>Category Metrics</h2><table><thead><tr><th>Category</th><th>Cases</th><th>Overall</th><th>Passed</th></tr></thead><tbody>{category_rows}</tbody></table><h2>Case Results</h2><table><thead><tr><th>Case</th><th>Category</th><th>Score</th><th>Status</th><th>Error</th></tr></thead><tbody>{rows}</tbody></table><h2>Recommendations</h2><ul>{recommendations}</ul></body></html>"""
+    return render_report(payload, _recommendations(payload))
 
 
 def load_run(path: str | Path) -> dict[str, Any]:
