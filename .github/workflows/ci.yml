@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: financial-llm-eval-harness
     strategy:
       fail-fast: false
       matrix:
@@ -17,6 +20,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          path: financial-llm-eval-harness
+
+      - name: Checkout public Copilot parser for offline integration tests
+        uses: actions/checkout@v4
+        with:
+          repository: Jo2234/ai-equity-research-copilot
+          ref: c8f474036879081a8cabdf4381829ab008731970
+          path: ai-equity-research-copilot
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -27,11 +40,16 @@ jobs:
       - name: Install package
         run: python -m pip install -e ".[dev]"
 
+      - name: Install pinned source normalizers for benchmark tests
+        run: python -m pip install "beautifulsoup4==4.13.4" "PyMuPDF==1.26.7" "PyPDF2==3.0.1"
+
       - name: Lint
         run: ruff check .
 
       - name: Test
         run: pytest
+        env:
+          FIN_EVAL_REQUIRE_COPILOT_PARSER: "1"
 
       - name: Validate bundled suite
         run: fin-eval validate-suite --suite evals/core.yaml
