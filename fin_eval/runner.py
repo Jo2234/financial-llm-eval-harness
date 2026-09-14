@@ -13,11 +13,12 @@ from typing import Any
 
 import yaml
 
-from .adapters import CopilotApiAdapter, MockAdapter, load_fixture_responses
+from .adapters import TARGET_REQUEST_FIELDS, CopilotApiAdapter, MockAdapter, load_fixture_responses
+from .document_map import DocumentMap, apply_document_map, load_document_map, validate_document_map
 from .models import EvalCase, TargetAdapter, TargetResponse
 from .reporting import render_report
 from .schema import SCHEMA_VERSION, EvalSuite, RunArtifact
-from .scoring import SCORER_VERSION, aggregate, score_case
+from .scoring import DETERMINISTIC_CHECKS, SCORER_VERSION, aggregate, score_case
 
 DEFAULT_THRESHOLDS = {
     "overall_score": 0.80,
@@ -152,7 +153,9 @@ def case_fingerprint(case: EvalCase) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _case_result(case: EvalCase, response: TargetResponse) -> dict[str, Any]:
+def _case_result(case: EvalCase, response: TargetResponse, document_map: DocumentMap | None = None) -> dict[str, Any]:
+    """Score one response. ``raw_response`` is preserved; only scored citations are canonicalized."""
+    response = apply_document_map(response, document_map)
     result = score_case(case, response)
     result.update(
         {
@@ -246,14 +249,18 @@ def run_suite(
     limit: int | None = None,
     metadata: dict[str, Any] | None = None,
     thresholds: dict[str, float | int] | None = None,
+    document_map: str | Path | DocumentMap | None = None,
 ) -> dict[str, Any]:
     suite_document = load_suite(suite)
-    cases = suite_document.cases
+    all_cases = suite_document.cases
     quality = suite_document.suite_kind == "quality"
-    validate_cases(cases, quality=quality)
-    cases = _filter_cases(cases, case_ids=case_ids, categories=categories, tags=tags, limit=limit)
+    validate_cases(all_cases, quality=quality)
+    cases = _filter_cases(all_cases, case_ids=case_ids, categories=categories, tags=tags, limit=limit)
     if not cases:
         raise ValueError("No cases selected; an empty run cannot establish evaluation quality")
+    # Validate identity mapping before any target request can be made.
+    doc_map = document_map if isinstance(document_map, DocumentMap) or document_map is None else load_document_map(document_map)
+    map_provenance = validate_document_map(doc_map, all_cases, cases) if doc_map else None
     if quality and target == "mock":
         if fixture is None:
             raise ValueError("Quality suites require an explicit --fixture for mock replay; use evals/plumbing.yaml for generated mock smoke tests")
@@ -274,7 +281,7 @@ def run_suite(
 
     for case in cases:
         response = adapter.answer(case)
-        details.append(_case_result(case, response))
+        details.append(_case_result(case, response, doc_map))
 
     summary = summarize_results(details)
     gate = gate_summary(summary, thresholds=thresholds)
@@ -283,12 +290,16 @@ def run_suite(
         "target": target,
         "base_url": base_url,
         "endpoint": endpoint if target == "copilot-api" else None,
+        "target_request_fields": list(TARGET_REQUEST_FIELDS) if target == "copilot-api" else None,
         "case_count": len(details),
         "suite_kind": suite_document.suite_kind,
         "suite_version": suite_document.schema_version,
         "evaluation_mode": "fixture-replay" if target == "mock" and fixture else target,
         "rubric_evaluation": "not_performed",
         "rubric_review_required_cases": sum(bool(case.judge_rubric) for case in cases),
+        "semantic_review": "not_performed",
+        "deterministic_checks": DETERMINISTIC_CHECKS,
+        "document_map": map_provenance,
         "started_at": started_at,
         "scorer_version": SCORER_VERSION,
         "duration_ms": int((time.perf_counter() - started) * 1000),
@@ -319,6 +330,7 @@ def run_suite(
                 "base_url": base_url,
                 "endpoint": endpoint,
                 "fixture": fixture,
+                "document_map": map_provenance,
                 "filters": {
                     "case_ids": case_ids,
                     "categories": categories,
@@ -379,7 +391,7 @@ def _recommendations(payload: dict[str, Any]) -> list[str]:
     summary = payload["summary"]
     recommendations = []
     if summary["severe_hallucination_count"]:
-        recommendations.append("Review deterministic severe flags before release; prohibited-term or missing-refusal matches are not independent proof of hallucination.")
+        recommendations.append("Review deterministic severe flags before release; prohibited-term, phrase-level assertion, direction-conflict or missing-refusal matches are not independent proof of hallucination.")
     if summary["citation_precision"] < DEFAULT_THRESHOLDS["citation_precision"]:
         recommendations.append("Inspect bad or missing citations before tuning answer prompts.")
     if summary["answer_point_recall"] < DEFAULT_THRESHOLDS["answer_point_recall"]:
@@ -389,6 +401,15 @@ def _recommendations(payload: dict[str, Any]) -> list[str]:
     if not recommendations:
         recommendations.append("No blocking recommendations from deterministic gates.")
     return recommendations
+
+
+def _flag_kinds(row: dict[str, Any]) -> str:
+    kinds = sorted({item.get("kind", "assertion") for item in row.get("unsupported_assertions") or []})
+    if row.get("contradicted_points"):
+        kinds.append("contradicted_point")
+    if row.get("must_not_include_hits"):
+        kinds.append("must_not_include")
+    return f" ({', '.join(kinds)})" if kinds else ""
 
 
 def markdown_report(payload: dict[str, Any]) -> str:
@@ -409,7 +430,7 @@ def markdown_report(payload: dict[str, Any]) -> str:
         f"- `suite_version`: {payload.get('metadata', {}).get('suite_version', 'not recorded')}",
         f"- `rubric_evaluation`: {payload.get('metadata', {}).get('rubric_evaluation', 'not performed')}",
         "",
-        "The pass gate covers deterministic checks only; contextual judge rubrics are not automatically evaluated. Behavior metrics apply only to nonempty, error-free responses. Error and empty responses remain failed cases; refusal accuracy excludes them.",
+        "The pass gate covers deterministic checks only; contextual judge rubrics are not automatically evaluated and semantic review is a separate step. Behavior metrics apply only to nonempty, error-free responses. Error and empty responses remain failed cases; refusal accuracy excludes them.",
         "",
         "## Aggregate Metrics",
     ]
@@ -445,7 +466,7 @@ def markdown_report(payload: dict[str, Any]) -> str:
 
     severe = [r for r in payload["results"] if r.get("severe_hallucination")]
     lines += ["", "## Deterministic Severe Flags"]
-    lines += [f"- `{r['case_id']}`: unsupported_claim_count={r['unsupported_claim_count']}" for r in severe[:25]] or ["None"]
+    lines += [f"- `{r['case_id']}`: unsupported_claim_count={r['unsupported_claim_count']}{_flag_kinds(r)}" for r in severe[:25]] or ["None"]
 
     slowest = sorted(payload["results"], key=lambda row: row.get("latency_ms") or 0, reverse=True)[:10]
     lines += ["", "## Slowest Cases", "| Case | Latency ms |", "|---|---:|"]
