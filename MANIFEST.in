@@ -3,3 +3,5 @@ recursive-include evals *.yaml *.json *.md
 recursive-include examples *.md
 recursive-include report_templates *.md
 recursive-include tests *.py
+
+recursive-include benchmark *.py *.md *.txt
