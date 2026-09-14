@@ -5,6 +5,7 @@ from pathlib import Path
 
 import typer
 
+from .document_map import DocumentMapError
 from .runner import compare_markdown, compare_runs, load_suite, run_suite, validate_cases
 from .schema import schema_bundle, write_schema_bundle
 
@@ -27,6 +28,11 @@ def run(
     timeout_s: float = typer.Option(20.0, "--timeout", help="Per-case target API timeout in seconds."),
     out: str = typer.Option("runs/latest", "--out", "-o", help="Directory for run artifacts."),
     fixture: str | None = typer.Option(None, "--fixture", help="Mock response fixture JSON/YAML."),
+    document_map: str | None = typer.Option(
+        None,
+        "--document-map",
+        help="JSON map of target document IDs (e.g. API UUIDs) to suite document IDs; validated before any request.",
+    ),
     case_ids: str | None = typer.Option(None, "--case-id", help="Comma-separated case IDs to run."),
     categories: str | None = typer.Option(None, "--category", help="Comma-separated categories to run."),
     tags: str | None = typer.Option(None, "--tag", help="Comma-separated tags to run."),
@@ -50,20 +56,25 @@ def run(
         }.items()
         if value is not None
     }
-    result = run_suite(
-        suite=suite,
-        target=target,
-        out=out,
-        base_url=base_url,
-        endpoint=endpoint,
-        timeout_s=timeout_s,
-        fixture=fixture,
-        case_ids=_split_csv(case_ids),
-        categories=_split_csv(categories),
-        tags=_split_csv(tags),
-        limit=limit,
-        thresholds=thresholds,
-    )
+    try:
+        result = run_suite(
+            suite=suite,
+            target=target,
+            out=out,
+            base_url=base_url,
+            endpoint=endpoint,
+            timeout_s=timeout_s,
+            fixture=fixture,
+            case_ids=_split_csv(case_ids),
+            categories=_split_csv(categories),
+            tags=_split_csv(tags),
+            limit=limit,
+            thresholds=thresholds,
+            document_map=document_map,
+        )
+    except DocumentMapError as exc:
+        typer.echo(f"Document map error: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
     typer.echo(json.dumps({"passed": result["passed"], "out": out, **result["summary"]}, indent=2))
     raise typer.Exit(code=0 if result["passed"] else 1)
 
