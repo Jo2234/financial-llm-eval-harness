@@ -116,6 +116,19 @@ class MockAdapter:
         return TargetResponse(answer=answer, citations=citations, raw_response={"adapter": "mock"}, latency_ms=5, model="mock-fixture", estimated_cost_usd=0.0)
 
 
+TARGET_REQUEST_FIELDS = ("question", "company_ids", "top_k")
+DEFAULT_TOP_K = 8
+
+
+def target_request(case: EvalCase, top_k: int = DEFAULT_TOP_K) -> dict[str, Any]:
+    """The only case data a target receives.
+
+    Case IDs, expected/selected documents, answer points, evidence, rubrics and
+    reference responses stay in the evaluator.
+    """
+    return {"question": case.question, "company_ids": list(case.company_ids), "top_k": top_k}
+
+
 class CopilotApiAdapter:
     def __init__(self, base_url: str, endpoint: str = "/research/chat", timeout_s: float = 20.0):
         self.base_url = base_url.rstrip("/")
@@ -125,13 +138,7 @@ class CopilotApiAdapter:
     def answer(self, case: EvalCase) -> TargetResponse:
         started = time.perf_counter()
         try:
-            payload: dict[str, Any] = {
-                "case_id": case.id,
-                "company_ids": case.company_ids,
-                "documents": case.documents,
-                "question": case.question,
-                "top_k": 8,
-            }
+            payload = target_request(case)
             response = httpx.post(f"{self.base_url}{self.endpoint}", json=payload, timeout=self.timeout_s)
             response.raise_for_status()
             data = response.json()
