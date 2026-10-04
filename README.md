@@ -167,9 +167,17 @@ Important top-level `results.json` fields:
 
 Use `report_templates/eval_report_template.md` when drafting a manual report or PR summary around generated run artifacts. The runtime reporter is currently implemented in `fin_eval/runner.py`; the template is documentation-only.
 
+## Verified Copilot citation mapping
+
+Copilot returns document UUIDs. Supply `--document-map path/to/document-map.json`, a JSON object of target UUID to canonical suite document ID, or its ingestion manifest. The map is validated before any target request and recorded with file/content hashes. Unknown, missing or explicitly wrong citation IDs cannot borrow validity from labels/excerpts. Raw responses preserve original UUIDs. See [public ingestion and reproduction instructions](benchmark/README.md) for creating the map from actual verified uploads.
+
+The API receives only `question`, `company_ids` and `top_k`; case IDs, expected documents, facts, rubric and fixtures remain with the evaluator. The supplied map checks identity consistency and is not independent proof of cited evidence.
+
 ## Scoring and regression provenance
 
-Scorer v2 separates execution status (`error`, `empty`, `answered`) from refusal behavior. Errors and empty answers fail the case and have `behavior_evaluated=false`, `refused=null`, and `refusal_correct=null`. They are not hallucinated claims. Refusal accuracy is correct behavior divided by **nonempty, error-free responses**; `behavior_evaluated_cases` and `behavior_unavailable_cases` expose that denominator. It is 0 when no response is evaluable, preventing an outage from passing the refusal gate. Error rate still uses all attempted cases. Other aggregate quality scores retain all attempted cases in their denominators.
+Scorer v3 adds quantity normalization, local metric/topic checks for opposite or negated quantities, quote-aware refusal recognition, and finite unsupported advice/target/guarantee/forecast phrase rules. Correct facts followed by recognized unsupported assertions fail. Currency word/symbol forms and scaled amounts are normalized consistently. These checks remain lexical heuristics with false positives and false negatives; contextual rubrics and semantic review are reported as not performed. See [precise limitations](benchmark/METHODOLOGY.md).
+
+Scorer v3 retains the v2 separation of execution status (`error`, `empty`, `answered`) from refusal behavior. Errors and empty answers fail the case and have `behavior_evaluated=false`, `refused=null`, and `refusal_correct=null`. They are not hallucinated claims. Refusal accuracy is correct behavior divided by **nonempty, error-free responses**; `behavior_evaluated_cases` and `behavior_unavailable_cases` expose that denominator. It is 0 when no response is evaluable, preventing an outage from passing the refusal gate. Error rate still uses all attempted cases. Other aggregate quality scores retain all attempted cases in their denominators.
 
 Runs record `scorer_version`, the complete case definition and its SHA-256 fingerprint. `compare --gate` requires identical case IDs, matching case fingerprints, and matching nonempty scorer versions. Added, removed, and changed cases are reported separately; omitted or changed failures are never called fixed. Incompatible or legacy unversioned runs return `comparable=false`, no aggregate deltas, and a failed regression gate. An empty selection is rejected before an adapter runs.
 
@@ -179,4 +187,4 @@ Changing source targets, case wording, evidence, or scorer semantics requires a 
 
 The [historical mock report excerpt](examples/mock_run_summary.md) and [v1 mock run card](examples/eval_run_card.md) preserve June 2026 output from the original instruction-based suite and scorer. They illustrate the earlier report format; their metrics are not results for the current factual quality suite.
 
-The supporting [historical failure-analysis case study](https://github.com/Jo2234/eval-harness-report) rescores saved 13 July 2026 responses offline with scorer v2 and the unchanged legacy suite. It documents execution failures and scoring corrections, with the original captures and provenance retained. It is not a fresh target run or a benchmark of the current quality suite.
+A self-contained public [comparison workflow](benchmark/README.md) and [methodology](benchmark/METHODOLOGY.md) cover exact source fetching, production ingestion, fresh local API/baseline captures and redacted export. New captures use scorer v3 and require a new baseline. Historical examples retain their original scores; this workflow does not regrade them.
