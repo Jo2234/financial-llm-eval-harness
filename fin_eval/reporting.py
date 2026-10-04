@@ -83,6 +83,18 @@ def render_report(payload: dict[str, Any], recommendations: list[str]) -> str:
             "No citation mismatches recorded.",
         )
         missing_docs = _list(row.get("missing_required_citations", []), "No missing required citations recorded.")
+        flags = _list(
+            [
+                f"{item.get('kind', 'assertion')}: {item['text']}" if item.get("text") else item.get("kind", "assertion")
+                for item in row.get("unsupported_assertions") or []
+            ]
+            + [
+                f"Contradicted point ({item.get('quantity')}: expected {item.get('expected_direction')}, "
+                f"found {item.get('observed_direction')}): {item.get('point')}"
+                for item in row.get("contradicted_points") or []
+            ],
+            "No deterministic assertion or direction-conflict flags.",
+        )
         refused = "Yes" if row.get("refused") else "No"
         behavior = "Correct" if row.get("refusal_correct") else "Incorrect"
         if row.get("behavior_evaluated") is False:
@@ -106,7 +118,7 @@ def render_report(payload: dict[str, Any], recommendations: list[str]) -> str:
 <div class="case-body">{error}<div class="mini-metrics">{mini}</div>
 <div class="evidence-grid">
 <div>
-<h4>Missing factual points</h4>{missing}<h4>Citation mismatches</h4>{citations}<h4>Missing required citations</h4>{missing_docs}</div>
+<h4>Missing factual points</h4>{missing}<h4>Assertion and direction flags</h4>{flags}<h4>Citation mismatches</h4>{citations}<h4>Missing required citations</h4>{missing_docs}</div>
 <div>
 <h4>Refusal behavior</h4>
 <p>Expected refusal: {"Yes" if expected else "No"} · Detected refusal: {refused}<br>Behavior check: {behavior}</p>
@@ -189,7 +201,7 @@ def render_report(payload: dict[str, Any], recommendations: list[str]) -> str:
 <dd class="fail">{s["failed_cases"]}</dd>
 </div>
 </dl>
-<p class="hint">Composite score is not accuracy. The pass gate covers deterministic checks only; contextual judge rubrics are not automatically evaluated. Refusal accuracy uses only nonempty, error-free responses. Unavailable responses remain failed cases.</p><nav class="anchor-nav" aria-label="Report sections"><a href="#cases">Case explorer ↓</a><a href="#categories">Category breakdown</a><a href="#recommendations">Recommendations</a><a href="#provenance">Metrics & provenance</a></nav></header>
+<p class="hint">Composite score is not accuracy. The pass gate covers deterministic checks only; contextual judge rubrics are not automatically evaluated and semantic review is a separate step. Refusal accuracy uses only nonempty, error-free responses. Unavailable responses remain failed cases.</p><nav class="anchor-nav" aria-label="Report sections"><a href="#cases">Case explorer ↓</a><a href="#categories">Category breakdown</a><a href="#recommendations">Recommendations</a><a href="#provenance">Metrics & provenance</a></nav></header>
 <section id="cases"><div class="section-heading"><h2>Case explorer</h2><p class="muted">Open a case to inspect the evidence</p></div>{redacted}
 <form id="case-filters" class="filters" hidden>
 <div class="search-field">
